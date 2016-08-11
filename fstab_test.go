@@ -29,15 +29,9 @@ func TestFstab(t *testing.T) {
 		t.Fatalf("Expected one option, got %v", len(entry.Opt))
 	}
 
-	if entry.Opt[0].Key != "errors" {
-		t.Fatalf("Expected option errors, got %s", entry.Opt[0].Key)
+	if entry.Opt["errors"].Value != "remount-ro" {
+		t.Fatalf("Expected option errors to have value remount-ro, got %s", entry.Opt["errors"].Value)
 	}
-
-	/*
-		if entry.Opt[0].Value != "remount-ro" {
-			t.Fatalf("Expected option value remount-ro, got %s", entry.Opt[0].Value)
-		}
-	*/
 
 	if entry.Passno != 1 {
 		t.Fatalf("Expected passno to be 1, got %v", entry.Passno)
@@ -56,5 +50,9 @@ func TestFstab(t *testing.T) {
 
 	if fstab.Entries[0].File != "/" {
 		t.Fatalf("Expected file to be /, got %s", fstab.Entries[0].File)
+	}
+
+	if fstab.Entries[0].Opt["errors"].Value != "remount-ro" {
+		t.Fatalf("Expected option value to be remount-ro got %s", fstab.Entries[0].Opt["errors"].Value)
 	}
 }

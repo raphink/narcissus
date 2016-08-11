@@ -62,9 +62,9 @@ func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
 func (n *Narcissus) getField(field reflect.Value, fieldType reflect.StructField, path string) (interface{}, error) {
 	fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
 	if field.Kind() == reflect.Slice {
-		return n.getSliceField(field, fieldType, fieldPath)
+		return n.getSliceField(field, fieldType, path, fieldPath)
 	} else if field.Kind() == reflect.Map {
-		return n.getMapField(field, fieldPath)
+		return n.getMapField(field, fieldType, fieldPath)
 	} else {
 		return n.getStringField(fieldType, fieldPath)
 	}
@@ -86,11 +86,11 @@ func (n *Narcissus) getStringField(fieldType reflect.StructField, fieldPath stri
 	return value, err
 }
 
-func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructField, fieldPath string) (interface{}, error) {
+func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) (interface{}, error) {
 	aug := n.Augeas
 
 	if fieldType.Tag.Get("type") == "seq" {
-		fieldPath = fmt.Sprintf("%s/*[.=~regexp('[0-9]*')]", fieldPath)
+		fieldPath = fmt.Sprintf("%s/*[.=~regexp('[0-9]*')]", path)
 	}
 	matches, err := aug.Match(fieldPath)
 	if err != nil {
@@ -109,16 +109,20 @@ func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructF
 	return values.Interface(), nil
 }
 
-func (n *Narcissus) getMapField(field reflect.Value, fieldPath string) (interface{}, error) {
+func (n *Narcissus) getMapField(field reflect.Value, fieldType reflect.StructField, fieldPath string) (interface{}, error) {
 	aug := n.Augeas
 	values := reflect.MakeMap(field.Type())
-	keysPath := fmt.Sprintf("%s/*", fieldPath)
-	matches, err := aug.Match(keysPath)
+	matches, err := aug.Match(fieldPath)
 	if err != nil {
 		return nil, err
 	}
 	for _, m := range matches {
-		label, err := aug.Label(m)
+		var label string
+		if fieldType.Tag.Get("key") == "label" {
+			label, err = aug.Label(m)
+		} else {
+			label, err = aug.Get(m)
+		}
 		if err != nil {
 			return nil, err
 		}

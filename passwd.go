@@ -2,7 +2,7 @@ package narcissus
 
 // Passwd maps /etc/passwd
 type Passwd struct {
-	Users map[string]PasswdUser `path:"."`
+	Users map[string]PasswdUser `path:"./*" key:"label"`
 }
 
 // PasswdUser maps a Passwd user
