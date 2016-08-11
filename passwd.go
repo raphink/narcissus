@@ -9,8 +9,8 @@ type Passwd struct {
 type PasswdUser struct {
 	Account  string `path:"." value-from:"label"`
 	Password string `path:"password"`
-	Uid      int    `path:"uid"`
-	Gid      int    `path:"gid"`
+	UID      int    `path:"uid"`
+	GID      int    `path:"gid"`
 	Name     string `path:"name"`
 	Home     string `path:"home"`
 	Shell    string `path:"shell"`

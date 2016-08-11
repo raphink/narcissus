@@ -29,7 +29,7 @@ func main() {
 		log.Fatalf("Expected no error, got %v", err)
 	}
 
-	log.Printf("Uid=%v", user.Uid)
+	log.Printf("UID=%v", user.UID)
 }
 ```
 
@@ -49,7 +49,7 @@ import (
 type group struct {
 	Name     string `path:"." value-from:"label"`
 	Password string `path:"password"`
-	Gid      int    `path:"gid"`
+	GID      int    `path:"gid"`
 }
 
 
@@ -66,6 +66,6 @@ func main() {
 		log.Fatalf("Expected no error, got %v", err)
 	}
 
-	log.Printf("Uid=%v", group.Gid)
+	log.Printf("GID=%v", group.GID)
 }
 ```

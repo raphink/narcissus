@@ -22,8 +22,8 @@ func TestPasswd(t *testing.T) {
 		t.Errorf("Expected 42 users, got %v", len(passwd.Users))
 	}
 
-	if passwd.Users["raphink"].Uid != 1000 {
-		t.Errorf("Expected user raphink to have uid 1000, got %v", passwd.Users["raphink"].Uid)
+	if passwd.Users["raphink"].UID != 1000 {
+		t.Errorf("Expected user raphink to have uid 1000, got %v", passwd.Users["raphink"].UID)
 	}
 }
 
@@ -44,8 +44,8 @@ func TestPasswdUser(t *testing.T) {
 		t.Errorf("Expected account to be raphink, got %s", user.Account)
 	}
 
-	if user.Uid != 1000 {
-		t.Errorf("Expected uid to be 1000, got %v", user.Uid)
+	if user.UID != 1000 {
+		t.Errorf("Expected uid to be 1000, got %v", user.UID)
 	}
 
 }

@@ -10,7 +10,7 @@ import (
 type group struct {
 	Name     string `path:"." value-from:"label"`
 	Password string `path:"password"`
-	Gid      int    `path:"gid"`
+	GID      int    `path:"gid"`
 }
 
 func main() {
@@ -26,7 +26,7 @@ func main() {
 		log.Fatalf("Expected no error, got %v", err)
 	}
 
-	log.Printf("Uid=%v", user.Shell)
+	log.Printf("UID=%v", user.Shell)
 
 	group := &group{}
 	err = n.Parse(group, "/files/etc/group/docker")
@@ -34,5 +34,5 @@ func main() {
 		log.Fatalf("Expected no error, got %v", err)
 	}
 
-	log.Printf("Uid=%v", group.Gid)
+	log.Printf("GID=%v", group.GID)
 }
