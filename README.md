@@ -56,7 +56,7 @@ func main() {
 	}
 
 	group := &Group{}
-	err = narcissus.Parse(aug, user, "/files/etc/group/docker")
+	err = narcissus.Parse(aug, group, "/files/etc/group/docker")
 	if err != nil {
 		log.Fatalf("Expected no error, got %v", err)
 	}
