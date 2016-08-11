@@ -1,3 +1,9 @@
 language: go
+addons:
+  apt:
+    sources:
+      - augeas
+    packages:
+      - libaugeas-dev
 go:
 - 1.6
