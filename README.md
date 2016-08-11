@@ -1,7 +1,7 @@
 Narcissus
 =========
 
-[![Documentation](https://img.shields.io/badge/godoc-narcissus-blue.svg)](https://godoc.org/github.com/raphink/narcissus)
+[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/raphink/narcissus)
 [![Build Status](https://img.shields.io/travis/raphink/narcissus/master.svg)](https://travis-ci.org/raphink/narcissus)
 [![Coverage Status](https://img.shields.io/coveralls/raphink/narcissus.svg)](https://coveralls.io/r/raphink/narcissus?branch=master)
 
