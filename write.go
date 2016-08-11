@@ -37,5 +37,23 @@ func (n *Narcissus) writeStruct(ref reflect.Value, path string) error {
 }
 
 func (n *Narcissus) writeField(field reflect.Value, fieldType reflect.StructField, path string) error {
-	return fmt.Errorf("Write() is not implemented yet")
+	fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
+	if field.Kind() == reflect.Slice {
+		return n.writeSliceField(field, fieldType, path, fieldPath)
+	} else if field.Kind() == reflect.Map {
+		return n.writeMapField(field, fieldType, fieldPath)
+	}
+	return n.writeSimpleField(fieldType.Type, fieldPath, fieldType.Tag)
+}
+
+func (n *Narcissus) writeSimpleField(fieldType reflect.Type, fieldPath string, tag reflect.StructTag) error {
+	return nil
+}
+
+func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) error {
+	return nil
+}
+
+func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructField, fieldPath string) error {
+	return nil
 }
