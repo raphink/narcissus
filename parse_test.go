@@ -108,6 +108,7 @@ type simpleValues struct {
 	Bool       bool     `path:"bool"`
 	SlStr      []string `path:"slstr"`
 	SlInt      []int    `path:"slint"`
+	SlBool     []bool   `path:"slbool"`
 }
 
 func TestGetStringField(t *testing.T) {
@@ -123,6 +124,8 @@ func TestGetStringField(t *testing.T) {
 	n.Augeas.Set("/test/slstr[2]", "b")
 	n.Augeas.Set("/test/slint[1]", "1")
 	n.Augeas.Set("/test/slint[2]", "2")
+	n.Augeas.Set("/test/slbool[1]", "true")
+	n.Augeas.Set("/test/slbool[2]", "false")
 	s := &simpleValues{
 		augeasPath: "/test",
 	}
@@ -158,5 +161,17 @@ func TestGetStringField(t *testing.T) {
 
 	if s.SlInt[1] != 2 {
 		t.Errorf("Expected element to be 2, got %v", s.SlInt[1])
+	}
+
+	if len(s.SlBool) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(s.SlBool))
+	}
+
+	if s.SlBool[0] != true {
+		t.Errorf("Expected element to be true, got %v", s.SlBool[0])
+	}
+
+	if s.SlBool[1] != false {
+		t.Errorf("Expected element to be false, got %v", s.SlBool[1])
 	}
 }
