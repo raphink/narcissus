@@ -215,7 +215,7 @@ type mapValues struct {
 		Int   int      `path:"int"`
 		Bool  bool     `path:"bool"`
 		SlStr []string `path:"slstr"`
-	} `path:"*"`
+	} `path:"mstruct"`
 }
 
 func TestGetMapField(t *testing.T) {
