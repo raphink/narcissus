@@ -6,8 +6,7 @@ import (
 	"honnef.co/go/augeas"
 )
 
-func TestFstab(t *testing.T) {
-
+func TestFstabEntry(t *testing.T) {
 	aug, err := augeas.New("/home/raphink/go/src/github.com/raphink/narcissus/fakeroot", "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -36,10 +35,16 @@ func TestFstab(t *testing.T) {
 	if entry.Passno != 1 {
 		t.Errorf("Expected passno to be 1, got %v", entry.Passno)
 	}
+}
 
-	// Test the whole fstab
-	fstab := &Fstab{}
-	err = n.Parse(fstab, "/files/etc/fstab")
+func TestFstab(t *testing.T) {
+	aug, err := augeas.New("/home/raphink/go/src/github.com/raphink/narcissus/fakeroot", "", augeas.None)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	fstab, err := n.NewFstab()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}

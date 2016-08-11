@@ -19,3 +19,10 @@ type FstabEntry struct {
 	Dump   int `path:"dump"`
 	Passno int `path:"passno"`
 }
+
+// NewFstab returns a new Fstab structure
+func (n *Narcissus) NewFstab() (f *Fstab, err error) {
+	f = &Fstab{}
+	err = n.Parse(f, "/files/etc/fstab")
+	return
+}
