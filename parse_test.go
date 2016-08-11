@@ -101,9 +101,10 @@ func TestNoAugeasPathField(t *testing.T) {
 
 type simpleValues struct {
 	augeasPath string
-	Str        string `path:"str"`
-	Int        int    `path:"int"`
-	Bool       bool   `path:"bool"`
+	Str        string   `path:"str"`
+	Int        int      `path:"int"`
+	Bool       bool     `path:"bool"`
+	SlStr      []string `path:"slstr"`
 }
 
 func TestGetStringField(t *testing.T) {
@@ -115,6 +116,8 @@ func TestGetStringField(t *testing.T) {
 	n.Augeas.Set("/test/str", "foo")
 	n.Augeas.Set("/test/int", "42")
 	n.Augeas.Set("/test/bool", "true")
+	n.Augeas.Set("/test/slstr[1]", "a")
+	n.Augeas.Set("/test/slstr[2]", "b")
 	s := &simpleValues{
 		augeasPath: "/test",
 	}
@@ -134,6 +137,14 @@ func TestGetStringField(t *testing.T) {
 
 	if s.Bool != true {
 		t.Errorf("Expected true, got %v", s.Bool)
+	}
+
+	if len(s.SlStr) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(s.SlStr))
+	}
+
+	if s.SlStr[1] != "b" {
+		t.Errorf("Expected element to be b, got %s", s.SlStr[1])
 	}
 
 }
