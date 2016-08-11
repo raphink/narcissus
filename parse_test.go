@@ -207,3 +207,48 @@ func TestGetSliceField(t *testing.T) {
 		t.Errorf("Expected element to be bar, got %s", s.SlStrSeq[1])
 	}
 }
+
+type mapValues struct {
+	augeasPath string
+	Entries    map[string]struct {
+		Str   string   `path:"str"`
+		Int   int      `path:"int"`
+		Bool  bool     `path:"bool"`
+		SlStr []string `path:"slstr"`
+	} `path:"*"`
+}
+
+func TestGetMapField(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.None)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+	n.Augeas.Set("/test/mstruct[1]", "one")
+	n.Augeas.Set("/test/mstruct[1]/str", "a")
+	n.Augeas.Set("/test/mstruct[1]/int", "42")
+	n.Augeas.Set("/test/mstruct[1]/bool", "true")
+	n.Augeas.Set("/test/mstruct[1]/slstr[1]", "alpha")
+	n.Augeas.Set("/test/mstruct[1]/slstr[2]", "beta")
+	n.Augeas.Set("/test/mstruct[2]", "two")
+	n.Augeas.Set("/test/mstruct[2]/str", "b")
+	n.Augeas.Set("/test/mstruct[2]/int", "43")
+	n.Augeas.Set("/test/mstruct[2]/bool", "false")
+	n.Augeas.Set("/test/mstruct[2]/slstr[1]", "gamma")
+	n.Augeas.Set("/test/mstruct[2]/slstr[2]", "delta")
+	m := &mapValues{
+		augeasPath: "/test",
+	}
+	err = n.Parse(m)
+
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	if len(m.Entries) != 2 {
+		t.Errorf("Expected 2 entries, got %v", len(m.Entries))
+	}
+	if m.Entries["two"].Str != "b" {
+		t.Errorf("Expected element to be b, got %s", m.Entries["two"].Str)
+	}
+}
