@@ -62,7 +62,7 @@ func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
 func (n *Narcissus) getField(field reflect.Value, fieldType reflect.StructField, path string) (interface{}, error) {
 	fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
 	if field.Kind() == reflect.Slice {
-		return n.getSliceField(field, fieldType, path, fieldPath)
+		return n.getSliceField(field, fieldType, fieldPath)
 	} else if field.Kind() == reflect.Map {
 		return n.getMapField(field, fieldPath)
 	} else {
@@ -86,11 +86,11 @@ func (n *Narcissus) getStringField(fieldType reflect.StructField, fieldPath stri
 	return value, err
 }
 
-func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) (interface{}, error) {
+func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructField, fieldPath string) (interface{}, error) {
 	aug := n.Augeas
 
 	if fieldType.Tag.Get("type") == "seq" {
-		fieldPath = fmt.Sprintf("%s/*[.=~regexp('[0-9]*')]", path)
+		fieldPath = fmt.Sprintf("%s/*[.=~regexp('[0-9]*')]", fieldPath)
 	}
 	matches, err := aug.Match(fieldPath)
 	if err != nil {
