@@ -68,6 +68,7 @@ import (
 )
 
 type group struct {
+	augeasPath string
 	Name     string `path:"." value-from:"label"`
 	Password string `path:"password"`
 	GID      int    `path:"gid"`
