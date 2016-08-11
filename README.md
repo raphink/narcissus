@@ -40,3 +40,30 @@ func main() {
 }
 ```
 
+## Using provided structures
+
+```go
+import (
+	"log"
+
+	"honnef.co/go/augeas"
+	"github.com/raphink/narcissus"
+)
+
+func main() {
+	aug, err := augeas.New("/", "", augeas.None)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+
+	user := &narcissus.PasswdUser{}
+	err = narcissus.Parse(aug, user, "/files/etc/passwd/raphink")
+	if err != nil {
+		log.Fatalf("Expected no error, got %v", err)
+	}
+
+	log.Printf("Uid=%v", user.Uid)
+}
+```
+
+
