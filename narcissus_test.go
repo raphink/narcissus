@@ -34,11 +34,9 @@ func TestPasswd(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	/* Label not implemented yet
 	if user.Account != "raphink" {
 		t.Fatalf("Expected account to be raphink, got %s", user.Account)
 	}
-	*/
 
 	if user.Uid != 1000 {
 		t.Fatalf("Expected uid to be 1000, got %v", user.Uid)

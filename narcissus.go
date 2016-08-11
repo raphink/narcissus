@@ -60,7 +60,7 @@ func getField(aug augeas.Augeas, field reflect.Value, fieldType reflect.StructFi
 		var value string
 		var err error
 		if fieldType.Tag.Get("value-from") == "label" {
-			// Need aug_label in go-augeas
+			value, err = aug.Label(fieldPath)
 		} else {
 			value, err = aug.Get(fieldPath)
 		}
