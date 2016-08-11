@@ -64,7 +64,7 @@ func (n *Narcissus) getField(field reflect.Value, fieldType reflect.StructField,
 	if field.Kind() == reflect.Slice {
 		return n.getSliceField(field, fieldType, path, fieldPath)
 	} else if field.Kind() == reflect.Map {
-		return n.getMapField(field, path, fieldPath)
+		return n.getMapField(field, fieldPath)
 	} else {
 		return n.getStringField(fieldType, fieldPath)
 	}
@@ -109,10 +109,10 @@ func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructF
 	return values.Interface(), nil
 }
 
-func (n *Narcissus) getMapField(field reflect.Value, path, fieldPath string) (interface{}, error) {
+func (n *Narcissus) getMapField(field reflect.Value, fieldPath string) (interface{}, error) {
 	aug := n.Augeas
 	values := reflect.MakeMap(field.Type())
-	keysPath := fmt.Sprintf("%s/*", path)
+	keysPath := fmt.Sprintf("%s/*", fieldPath)
 	matches, err := aug.Match(keysPath)
 	if err != nil {
 		return nil, err
