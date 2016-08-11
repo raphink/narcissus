@@ -28,4 +28,11 @@ func TestPasswd(t *testing.T) {
 	if user.Uid != 1000 {
 		t.Fatalf("Expected uid to be 1000, got %v", user.Uid)
 	}
+
+	// Test full file
+	passwd := &Passwd{}
+	err = n.Parse(passwd, "/files/etc/passwd")
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 }

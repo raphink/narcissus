@@ -53,31 +53,66 @@ func (n *Narcissus) Parse(val interface{}, path string) error {
 func getField(aug *augeas.Augeas, field reflect.Value, fieldType reflect.StructField, path string) (interface{}, error) {
 	fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
 	if field.Kind() == reflect.Slice {
-		var values []interface{}
-		matches, err := aug.Match(fieldPath)
+		return getSliceField(aug, fieldPath)
+	} else if field.Kind() == reflect.Map {
+		return getMapField(aug, field, path, fieldPath)
+	} else {
+		return getStringField(aug, fieldType, fieldPath)
+	}
+	return nil, nil
+}
+
+func getStringField(aug *augeas.Augeas, fieldType reflect.StructField, fieldPath string) (string, error) {
+	log.Printf("Getting %s", fieldPath)
+	var value string
+	var err error
+	if fieldType.Tag.Get("value-from") == "label" {
+		value, err = aug.Label(fieldPath)
+	} else {
+		value, err = aug.Get(fieldPath)
+	}
+	return value, err
+}
+
+func getSliceField(aug *augeas.Augeas, fieldPath string) (interface{}, error) {
+	var values []interface{}
+	matches, err := aug.Match(fieldPath)
+	if err != nil {
+		return nil, err
+	}
+	for _, m := range matches {
+		v, err := aug.Get(m)
 		if err != nil {
 			return nil, err
 		}
-		for _, m := range matches {
-			v, err := aug.Get(m)
-			if err != nil {
-				return nil, err
-			}
-			values = append(values, v)
-		}
-		return nil, nil
-	} else {
-		log.Printf("Getting %s", fieldPath)
-		var value string
-		var err error
-		if fieldType.Tag.Get("value-from") == "label" {
-			value, err = aug.Label(fieldPath)
-		} else {
-			value, err = aug.Get(fieldPath)
-		}
-		return value, err
+		values = append(values, v)
 	}
 	return nil, nil
+}
+
+func getMapField(aug *augeas.Augeas, field reflect.Value, path, fieldPath string) (interface{}, error) {
+	values := reflect.MakeMap(field.Type())
+	keysPath := fmt.Sprintf("%s/*", path)
+	matches, err := aug.Match(keysPath)
+	if err != nil {
+		return nil, err
+	}
+	for _, m := range matches {
+		label, err := aug.Label(m)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("label=%s\n", label)
+		v, err := aug.Get(m)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("v=%s\n", v)
+		// Ugly for now
+		p := PasswdUser{}
+		values.SetMapIndex(reflect.ValueOf(v), reflect.ValueOf(p))
+	}
+	return nil, fmt.Errorf("Cannot proces maps")
 }
 
 func setField(field reflect.Value, fieldType reflect.StructField, value interface{}) error {
