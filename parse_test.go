@@ -285,3 +285,29 @@ func TestGetMapField(t *testing.T) {
 		t.Errorf("Expected element to be b, got %s", m.Entries["two"].Str)
 	}
 }
+
+type noCapital struct {
+	augeasPath string
+	a          string `path:"a"`
+}
+
+func TestSetField(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+	n.Augeas.Set("/test/a", "a")
+	s := &noCapital{
+		augeasPath: "/test",
+	}
+	err = n.Parse(s)
+
+	if err == nil {
+		t.Error("Expected an error, got nil")
+	}
+
+	if err.Error() != "cannot set field a" {
+		t.Errorf("Expected setField error, got %v", err)
+	}
+}

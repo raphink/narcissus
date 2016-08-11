@@ -171,6 +171,10 @@ func (n *Narcissus) getMapField(field reflect.Value, fieldType reflect.StructFie
 }
 
 func setField(field reflect.Value, fieldType reflect.StructField, value interface{}) error {
+	if !field.CanSet() {
+		return fmt.Errorf("cannot set field %s", fieldType.Name)
+	}
+
 	v := reflect.ValueOf(value)
 	if field.Kind() == v.Kind() {
 		field.Set(v)
