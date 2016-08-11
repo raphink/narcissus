@@ -7,10 +7,10 @@ This go package aims to provide reflection for the Augeas library.
 
 ```go
 import (
-  "log"
+	"log"
 
 	"honnef.co/go/augeas"
-  "github.com/raphink/narcissus"
+	"github.com/raphink/narcissus"
 )
 
 type PasswdUser struct {
