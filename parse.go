@@ -73,10 +73,8 @@ func (n *Narcissus) getField(field reflect.Value, fieldType reflect.StructField,
 		return n.getSliceField(field, fieldType, path, fieldPath)
 	} else if field.Kind() == reflect.Map {
 		return n.getMapField(field, fieldType, fieldPath)
-	} else {
-		return n.getStringField(fieldType.Type, fieldPath, fieldType.Tag)
 	}
-	return nil, nil
+	return n.getStringField(fieldType.Type, fieldPath, fieldType.Tag)
 }
 
 func (n *Narcissus) getStringField(fieldType reflect.Type, fieldPath string, tag reflect.StructTag) (string, error) {
