@@ -18,10 +18,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to create Augeas handler")
 	}
-
-	n := &Narcissus{
-		Augeas: &aug,
-	}
+  n := narcissus.New(&aug)
 
 	user := &narcissus.PasswdUser{}
 	err = n.Parse(user, "/files/etc/passwd/raphink")
@@ -58,10 +55,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to create Augeas handler")
 	}
-
-	n := &Narcissus{
-		Augeas: &aug,
-	}
+  n := narcissus.New(&aug)
 
 	group := &group{}
 	err = n.Parse(group, "/files/etc/group/docker")

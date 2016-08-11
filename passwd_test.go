@@ -12,10 +12,7 @@ func TestPasswd(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
-
-	n := &Narcissus{
-		Augeas: &aug,
-	}
+	n := New(&aug)
 
 	// Test one fstab
 	user := &PasswdUser{}

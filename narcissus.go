@@ -13,6 +13,12 @@ type Narcissus struct {
 	Augeas *augeas.Augeas
 }
 
+func New(aug *augeas.Augeas) *Narcissus {
+	return &Narcissus{
+		Augeas: aug,
+	}
+}
+
 func (n *Narcissus) Parse(val interface{}, path string) error {
 	aug := n.Augeas
 	ptr := reflect.ValueOf(val)
