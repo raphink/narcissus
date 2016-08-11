@@ -55,4 +55,12 @@ func TestFstab(t *testing.T) {
 	if fstab.Entries[0].Opt["errors"].Value != "remount-ro" {
 		t.Errorf("Expected option value to be remount-ro got %s", fstab.Entries[0].Opt["errors"].Value)
 	}
+
+	if len(fstab.Comments) != 6 {
+		t.Errorf("Expected 6 comments, got %v", len(fstab.Comments))
+	}
+
+	if fstab.Comments[5].Comment != "/boot was on /dev/sda1 during installation" {
+		t.Errorf("Expected comment text, got %s", fstab.Comments[5].Comment)
+	}
 }

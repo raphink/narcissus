@@ -2,6 +2,9 @@ package narcissus
 
 // Fstab maps a /etc/fstab file
 type Fstab struct {
+	Comments []struct {
+		Comment string `path:"."`
+	} `path:"#comment"`
 	Entries []FstabEntry `type:"seq"`
 }
 
