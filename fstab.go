@@ -11,8 +11,8 @@ type FstabEntry struct {
 	File    string `path:"file"`
 	Vfstype string `path:"vfstype"`
 	Opt     []struct {
-		Key string `path:"."`
-		//Value string `path:"value"`
+		Key   string `path:"."`
+		Value string `path:"value"`
 	} `path:"opt"`
 	Dump   int `path:"dump"`
 	Passno int `path:"passno"`

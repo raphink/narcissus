@@ -1,12 +1,16 @@
 package narcissus
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"honnef.co/go/augeas"
 )
+
+var ErrNodeNotFound = errors.New("Node not found")
 
 type Narcissus struct {
 	Augeas *augeas.Augeas
@@ -35,6 +39,10 @@ func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
 	refType := ref.Type()
 	for i := 0; i < refType.NumField(); i++ {
 		value, err := n.getField(ref.Field(i), refType.Field(i), path)
+		// TODO: implement omitempty
+		if err == ErrNodeNotFound {
+			continue
+		}
 		if err != nil {
 			return fmt.Errorf("failed to retrieve field %s: %v", refType.Field(i).Name, err)
 		}
@@ -71,6 +79,9 @@ func (n *Narcissus) getStringField(fieldType reflect.StructField, fieldPath stri
 		value, err = aug.Label(fieldPath)
 	} else {
 		value, err = aug.Get(fieldPath)
+	}
+	if err != nil && strings.Contains(err.Error(), "No matching node") {
+		return "", ErrNodeNotFound
 	}
 	return value, err
 }
