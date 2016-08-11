@@ -6,14 +6,13 @@ import (
 	"honnef.co/go/augeas"
 )
 
-func TestHosts(t *testing.T) {
+func TestHost(t *testing.T) {
 	aug, err := augeas.New("/home/raphink/go/src/github.com/raphink/narcissus/fakeroot", "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
 	n := New(&aug)
 
-	// Test one fstab
 	host := &Host{}
 	err = n.Parse(host, "/files/etc/hosts/1")
 	if err != nil {
@@ -25,21 +24,20 @@ func TestHosts(t *testing.T) {
 	}
 }
 
-func TestHost(t *testing.T) {
+func TestHosts(t *testing.T) {
 	aug, err := augeas.New("/home/raphink/go/src/github.com/raphink/narcissus/fakeroot", "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
 	n := New(&aug)
 
-	// Test one fstab
 	hosts, err := n.NewHosts()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
 	if len(hosts.Hosts) != 5 {
-		t.Errorf("Expected 3 hosts, got %v", len(hosts.Hosts))
+		t.Errorf("Expected 5 hosts, got %v", len(hosts.Hosts))
 	}
 
 	if hosts.Hosts[2].IPAddress != "::1" {
