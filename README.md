@@ -33,6 +33,27 @@ func main() {
 }
 ```
 
+## Available types
+
+### Fstab
+
+* [`Fstab`](https://godoc.org/github.com/raphink/narcissus#Fstab) maps a whole `/etc/fstab` file
+* [`FstabEntry`](https://godoc.org/github.com/raphink/narcissus#FstabEntry) maps a single `/etc/fstab` entry
+
+### Hosts
+
+* [`Hosts`](https://godoc.org/github.com/raphink/narcissus#Hosts) maps a whole `/etc/hosts` file
+* [`Host`](https://godoc.org/github.com/raphink/narcissus#Host) maps a single `/etc/hosts` entry
+
+### Passwd
+
+* [`Passwd`](https://godoc.org/github.com/raphink/narcissus#Passwd) maps a whole `/etc/passwd` file
+* [`PasswdUser`](https://godoc.org/github.com/raphink/narcissus#PasswdUser) maps a single `/etc/passwd` entry
+
+### Services
+
+* [`Services`](https://godoc.org/github.com/raphink/narcissus#Services) maps a whole `/etc/services` file
+* [`Service`](https://godoc.org/github.com/raphink/narcissus#Service) maps a single `/etc/services` entry
 
 
 ## Mapping your own structures
