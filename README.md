@@ -1,6 +1,9 @@
 Narcissus
 =========
 
+[![Build Status](https://img.shields.io/travis/raphink/narcissus/master.svg)](https://travis-ci.org/raphink/narcissus)
+[![Coverage Status](https://img.shields.io/coveralls/raphink/narcissus.svg)](https://coveralls.io/r/raphink/narcissus?branch=master)
+
 This go package aims to provide reflection for the Augeas library.
 
 ## Example
