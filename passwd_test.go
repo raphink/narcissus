@@ -18,29 +18,29 @@ func TestPasswd(t *testing.T) {
 	user := &PasswdUser{}
 	err = n.Parse(user, "/files/etc/passwd/raphink")
 	if err != nil {
-		t.Fatalf("Expected no error, got %v", err)
+		t.Errorf("Expected no error, got %v", err)
 	}
 
 	if user.Account != "raphink" {
-		t.Fatalf("Expected account to be raphink, got %s", user.Account)
+		t.Errorf("Expected account to be raphink, got %s", user.Account)
 	}
 
 	if user.Uid != 1000 {
-		t.Fatalf("Expected uid to be 1000, got %v", user.Uid)
+		t.Errorf("Expected uid to be 1000, got %v", user.Uid)
 	}
 
 	// Test full file
 	passwd := &Passwd{}
 	err = n.Parse(passwd, "/files/etc/passwd")
 	if err != nil {
-		t.Fatalf("Expected no error, got %v", err)
+		t.Errorf("Expected no error, got %v", err)
 	}
 
 	if len(passwd.Users) != 42 {
-		t.Fatalf("Expected 42 users, got %v", len(passwd.Users))
+		t.Errorf("Expected 42 users, got %v", len(passwd.Users))
 	}
 
 	if passwd.Users["raphink"].Uid != 1000 {
-		t.Fatalf("Expected user raphink to have uid 1000, got %v", passwd.Users["raphink"].Uid)
+		t.Errorf("Expected user raphink to have uid 1000, got %v", passwd.Users["raphink"].Uid)
 	}
 }
