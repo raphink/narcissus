@@ -13,9 +13,13 @@ func TestPasswd(t *testing.T) {
 		t.Fatal("Failed to create Augeas handler")
 	}
 
+	n := &Narcissus{
+		Augeas: &aug,
+	}
+
 	// Test one fstab
 	user := &PasswdUser{}
-	err = Parse(aug, user, "/files/etc/passwd/raphink")
+	err = n.Parse(user, "/files/etc/passwd/raphink")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}

@@ -9,7 +9,12 @@ import (
 	"honnef.co/go/augeas"
 )
 
-func Parse(aug augeas.Augeas, val interface{}, path string) error {
+type Narcissus struct {
+	Augeas *augeas.Augeas
+}
+
+func (n *Narcissus) Parse(val interface{}, path string) error {
+	aug := n.Augeas
 	ptr := reflect.ValueOf(val)
 	if ptr.Kind() != reflect.Ptr {
 		return fmt.Errorf("not a ptr")
@@ -39,7 +44,7 @@ func Parse(aug augeas.Augeas, val interface{}, path string) error {
 	return nil
 }
 
-func getField(aug augeas.Augeas, field reflect.Value, fieldType reflect.StructField, path string) (interface{}, error) {
+func getField(aug *augeas.Augeas, field reflect.Value, fieldType reflect.StructField, path string) (interface{}, error) {
 	fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
 	if field.Kind() == reflect.Slice {
 		var values []interface{}

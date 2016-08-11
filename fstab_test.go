@@ -13,9 +13,13 @@ func TestFstab(t *testing.T) {
 		t.Fatal("Failed to create Augeas handler")
 	}
 
+	n := &Narcissus{
+		Augeas: &aug,
+	}
+
 	// Test one fstab
 	entry := &FstabEntry{}
-	err = Parse(aug, entry, "/files/etc/fstab/1")
+	err = n.Parse(entry, "/files/etc/fstab/1")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -44,7 +48,7 @@ func TestFstab(t *testing.T) {
 	// Test the whole fstab
 	/*
 		fstab := &Fstab{}
-		err = Parse(aug, fstab, "/files/etc/fstab")
+		err = n.Parse(fstab, "/files/etc/fstab")
 		if err != nil {
 			t.Fatalf("Expected no error, got %v", err)
 		}
