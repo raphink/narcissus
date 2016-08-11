@@ -9,14 +9,9 @@ import (
 
 // Parse parses a structure pointer and feeds its fields with Augeas data
 func (n *Narcissus) Parse(val interface{}) error {
-	ptr := reflect.ValueOf(val)
-	if ptr.Kind() != reflect.Ptr {
-		return fmt.Errorf("not a ptr")
-	}
-	ref := ptr.Elem()
-
-	if ref.Kind() != reflect.Struct {
-		return fmt.Errorf("not a struct")
+	ref, err := structRef(val)
+	if err != nil {
+		return fmt.Errorf("invalid interface: %v", err)
 	}
 
 	path, err := getPath(ref)
