@@ -35,4 +35,12 @@ func TestPasswd(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
+
+	if len(passwd.Users) != 42 {
+		t.Fatalf("Expected 42 users, got %v", len(passwd.Users))
+	}
+
+	if passwd.Users["raphink"].Uid != 1000 {
+		t.Fatalf("Expected user raphink to have uid 1000, got %v", passwd.Users["raphink"].Uid)
+	}
 }

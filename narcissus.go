@@ -2,7 +2,6 @@ package narcissus
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 	"strconv"
 
@@ -24,10 +23,13 @@ func (n *Narcissus) Parse(val interface{}, path string) error {
 	if ptr.Kind() != reflect.Ptr {
 		return fmt.Errorf("not a ptr")
 	}
-
 	ref := ptr.Elem()
+	return n.parseStruct(ref, path)
+}
+
+func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
 	if ref.Kind() != reflect.Struct {
-		return fmt.Errorf("not a struct ptr")
+		return fmt.Errorf("not a struct")
 	}
 
 	refType := ref.Type()
@@ -62,7 +64,6 @@ func (n *Narcissus) getField(field reflect.Value, fieldType reflect.StructField,
 }
 
 func (n *Narcissus) getStringField(fieldType reflect.StructField, fieldPath string) (string, error) {
-	log.Printf("Getting %s", fieldPath)
 	aug := n.Augeas
 	var value string
 	var err error
@@ -104,17 +105,16 @@ func (n *Narcissus) getMapField(field reflect.Value, path, fieldPath string) (in
 		if err != nil {
 			return nil, err
 		}
-		log.Printf("label=%s\n", label)
-		v, err := aug.Get(m)
+		vType := field.Type().Elem()
+		vStruct := reflect.New(vType)
+		err = n.parseStruct(vStruct.Elem(), m)
 		if err != nil {
 			return nil, err
 		}
-		log.Printf("v=%s\n", v)
-		// Ugly for now
-		p := PasswdUser{}
-		values.SetMapIndex(reflect.ValueOf(v), reflect.ValueOf(p))
+
+		values.SetMapIndex(reflect.ValueOf(label), vStruct.Elem())
 	}
-	return nil, fmt.Errorf("Cannot proces maps")
+	return values.Interface(), nil
 }
 
 func setField(field reflect.Value, fieldType reflect.StructField, value interface{}) error {
