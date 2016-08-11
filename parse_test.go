@@ -103,12 +103,9 @@ func TestNoAugeasPathField(t *testing.T) {
 
 type simpleValues struct {
 	augeasPath string
-	Str        string   `path:"str"`
-	Int        int      `path:"int"`
-	Bool       bool     `path:"bool"`
-	SlStr      []string `path:"slstr"`
-	SlInt      []int    `path:"slint"`
-	SlBool     []bool   `path:"slbool"`
+	Str        string `path:"str"`
+	Int        int    `path:"int"`
+	Bool       bool   `path:"bool"`
 }
 
 func TestGetStringField(t *testing.T) {
@@ -146,7 +143,35 @@ func TestGetStringField(t *testing.T) {
 	if s.Bool != true {
 		t.Errorf("Expected true, got %v", s.Bool)
 	}
+}
 
+type sliceValues struct {
+	augeasPath string
+	SlStr      []string `path:"slstr"`
+	SlInt      []int    `path:"slint"`
+	SlBool     []bool   `path:"slbool"`
+}
+
+func TestGetSliceField(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.None)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+	n.Augeas.Set("/test/slstr[1]", "a")
+	n.Augeas.Set("/test/slstr[2]", "b")
+	n.Augeas.Set("/test/slint[1]", "1")
+	n.Augeas.Set("/test/slint[2]", "2")
+	n.Augeas.Set("/test/slbool[1]", "true")
+	n.Augeas.Set("/test/slbool[2]", "false")
+	s := &sliceValues{
+		augeasPath: "/test",
+	}
+	err = n.Parse(s)
+
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
 	if len(s.SlStr) != 2 {
 		t.Errorf("Expected 2 elements, got %v", len(s.SlStr))
 	}
