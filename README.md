@@ -1,7 +1,7 @@
 Narcissus
 =========
 
-This go package aims provides reflection for the Augeas library.
+This go package aims to provide reflection for the Augeas library.
 
 ## Example
 
