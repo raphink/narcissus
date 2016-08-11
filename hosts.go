@@ -10,9 +10,10 @@ type Hosts struct {
 
 // Host maps an Hosts entry
 type Host struct {
-	IPAddress string `path:"ipaddr"`
-	Canonical string `path:"canonical"`
-	Comment   string `path:"#comment"`
+	IPAddress string   `path:"ipaddr"`
+	Canonical string   `path:"canonical"`
+	Aliases   []string `path:"alias"`
+	Comment   string   `path:"#comment"`
 }
 
 // NewHosts returns a new Hosts structure

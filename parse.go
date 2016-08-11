@@ -52,16 +52,16 @@ func (n *Narcissus) getField(field reflect.Value, fieldType reflect.StructField,
 	} else if field.Kind() == reflect.Map {
 		return n.getMapField(field, fieldType, fieldPath)
 	} else {
-		return n.getStringField(fieldType, fieldPath)
+		return n.getStringField(fieldType.Type, fieldPath, fieldType.Tag)
 	}
 	return nil, nil
 }
 
-func (n *Narcissus) getStringField(fieldType reflect.StructField, fieldPath string) (string, error) {
+func (n *Narcissus) getStringField(fieldType reflect.Type, fieldPath string, tag reflect.StructTag) (string, error) {
 	aug := n.Augeas
 	var value string
 	var err error
-	if fieldType.Tag.Get("value-from") == "label" {
+	if tag.Get("value-from") == "label" {
 		value, err = aug.Label(fieldPath)
 	} else {
 		value, err = aug.Get(fieldPath)
@@ -85,12 +85,22 @@ func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructF
 	values := reflect.MakeSlice(field.Type(), len(matches), len(matches))
 	for i, m := range matches {
 		vType := field.Type().Elem()
-		vStruct := reflect.New(vType)
-		err = n.parseStruct(vStruct.Elem(), m)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get slice element: %v", err)
+		var value reflect.Value
+		if vType.Kind() == reflect.Struct {
+			vStruct := reflect.New(vType)
+			err = n.parseStruct(vStruct.Elem(), m)
+			if err != nil {
+				return nil, fmt.Errorf("failed to get slice element: %v", err)
+			}
+			value = vStruct.Elem()
+		} else {
+			val, err := n.getStringField(vType, m, "")
+			if err != nil {
+				return nil, fmt.Errorf("failed to get slice element: %v", err)
+			}
+			value = reflect.ValueOf(val)
 		}
-		values.Index(i).Set(vStruct.Elem())
+		values.Index(i).Set(value)
 	}
 	return values.Interface(), nil
 }

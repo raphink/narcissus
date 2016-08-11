@@ -45,4 +45,8 @@ func TestHost(t *testing.T) {
 	if hosts.Hosts[2].IPAddress != "::1" {
 		t.Errorf("Expected IP to be ::1, got %s", hosts.Hosts[2].IPAddress)
 	}
+
+	if len(hosts.Hosts[2].Aliases) != 2 {
+		t.Errorf("Expected 2 aliases, got %v", len(hosts.Hosts[2].Aliases))
+	}
 }
