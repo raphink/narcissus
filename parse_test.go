@@ -79,7 +79,7 @@ func TestNoAugeasPathValue(t *testing.T) {
 		t.Error("Expected an error, got nothing")
 	}
 
-	if err.Error() != "no augeasPath value and no default" {
+	if err.Error() != "undefined path: no augeasPath value and no default" {
 		t.Errorf("Expected error no augeasPath value and no default, got %s", err.Error())
 	}
 }
@@ -96,7 +96,7 @@ func TestNoAugeasPathField(t *testing.T) {
 		t.Error("Expected an error, got nothing")
 	}
 
-	if err.Error() != "no augeasPath field" {
+	if err.Error() != "undefined path: no augeasPath field" {
 		t.Errorf("Expected error no augeasPath field, got %s", err.Error())
 	}
 }

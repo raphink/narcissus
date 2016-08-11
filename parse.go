@@ -19,24 +19,29 @@ func (n *Narcissus) Parse(val interface{}) error {
 		return fmt.Errorf("not a struct")
 	}
 
+	path, err := getPath(ref)
+	if err != nil {
+		return fmt.Errorf("undefined path: %v", err)
+	}
+
+	return n.parseStruct(ref, path)
+}
+
+func getPath(ref reflect.Value) (string, error) {
 	refType := ref.Type()
-	var path string
 	if pType, ok := refType.FieldByName("augeasPath"); ok {
 		p := ref.FieldByName("augeasPath")
 		if pp := p.String(); pp == "" {
 			if defaultP := pType.Tag.Get("default"); defaultP != "" {
-				path = defaultP
+				return defaultP, nil
 			} else {
-				return fmt.Errorf("no augeasPath value and no default")
+				return "", fmt.Errorf("no augeasPath value and no default")
 			}
 		} else {
-			path = pp
+			return pp, nil
 		}
-	} else {
-		return fmt.Errorf("no augeasPath field")
 	}
-
-	return n.parseStruct(ref, path)
+	return "", fmt.Errorf("no augeasPath field")
 }
 
 func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
