@@ -39,30 +39,54 @@ func Parse(aug augeas.Augeas, val interface{}, path string) error {
 	return nil
 }
 
-func getField(aug augeas.Augeas, field reflect.Value, fieldType reflect.StructField, path string) (value string, err error) {
+func getField(aug augeas.Augeas, field reflect.Value, fieldType reflect.StructField, path string) (interface{}, error) {
+	fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
 	if field.Kind() == reflect.Slice {
-		log.Println("Unsupported type slice")
-		return
+		var values []interface{}
+		matches, err := aug.Match(fieldPath)
+		if err != nil {
+			return nil, err
+		}
+		for _, m := range matches {
+			v, err := aug.Get(m)
+			if err != nil {
+				return nil, err
+			}
+			values = append(values, v)
+		}
+		return nil, nil
 	} else {
-		fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
 		log.Printf("Getting %s", fieldPath)
-		value, err = aug.Get(fieldPath)
+		var value string
+		var err error
+		if fieldType.Tag.Get("value-from") == "label" {
+			// Need aug_label in go-augeas
+		} else {
+			value, err = aug.Get(fieldPath)
+		}
+		return value, err
 	}
-	return
+	return nil, nil
 }
 
-func setField(field reflect.Value, fieldType reflect.StructField, value string) error {
+func setField(field reflect.Value, fieldType reflect.StructField, value interface{}) error {
+	v := reflect.ValueOf(value)
+	if field.Kind() == v.Kind() {
+		field.Set(v)
+		return nil
+	}
+
 	switch field.Kind() {
 	case reflect.String:
-		field.SetString(value)
+		field.SetString(value.(string))
 	case reflect.Bool:
-		bvalue, err := strconv.ParseBool(value)
+		bvalue, err := strconv.ParseBool(value.(string))
 		if err != nil {
 			return err
 		}
 		field.SetBool(bvalue)
 	case reflect.Int:
-		intValue, err := strconv.ParseInt(value, 10, 32)
+		intValue, err := strconv.ParseInt(value.(string), 10, 32)
 		if err != nil {
 			return err
 		}
