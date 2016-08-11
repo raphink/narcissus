@@ -27,11 +27,13 @@ func (n *Narcissus) Parse(val interface{}) error {
 			if defaultP := pType.Tag.Get("default"); defaultP != "" {
 				path = defaultP
 			} else {
-				return fmt.Errorf("no augeasPath and no default")
+				return fmt.Errorf("no augeasPath value and no default")
 			}
 		} else {
 			path = pp
 		}
+	} else {
+		return fmt.Errorf("no augeasPath field")
 	}
 
 	return n.parseStruct(ref, path)
