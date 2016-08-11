@@ -69,9 +69,10 @@ import (
 
 type group struct {
 	augeasPath string
-	Name       string `path:"." value-from:"label"`
-	Password   string `path:"password"`
-	GID        int    `path:"gid"`
+	Name       string   `path:"." value-from:"label"`
+	Password   string   `path:"password"`
+	GID        int      `path:"gid"`
+	Users      []string `path:"user"`
 }
 
 
@@ -91,5 +92,6 @@ func main() {
 	}
 
 	log.Printf("GID=%v", group.GID)
+	log.Printf("Users=%v", strings.Join(group.Users, ","))
 }
 ```
