@@ -36,7 +36,7 @@ func main() {
 		log.Fatalf("Expected no error, got %v", err)
 	}
 
-	log.Printf("Uid=%s", user.Uid)
+	log.Printf("Uid=%v", user.Uid)
 }
 ```
 
