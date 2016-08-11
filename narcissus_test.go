@@ -14,6 +14,12 @@ type FstabEntry struct {
 	Spec    string `path:"spec"`
 	File    string `path:"file"`
 	Vfstype string `path:"vfstype"`
+	Opt     []struct {
+		Key   string `path:"."`
+		Value string `path:"value"`
+	} `path:"opt"`
+	Dump   int `path:"dump"`
+	Passno int `path:"passno"`
 }
 
 func TestFstab(t *testing.T) {
@@ -32,6 +38,23 @@ func TestFstab(t *testing.T) {
 
 	if entry.File != "/" {
 		t.Fatalf("Expected file to be /, got %s", entry.File)
+	}
+
+	/*
+		if len(entry.Opt) != 1 {
+			t.Fatalf("Expected one option, got %v", len(entry.Opt))
+		}
+
+		if entry.Opt[0].Key != "errors" {
+			t.Fatalf("Expected option errors, got %s", entry.Opt[0].Key)
+		}
+		if entry.Opt[0].Value != "no-remounts" {
+			t.Fatalf("Expected option value no-remounts, got %s", entry.Opt[0].Value)
+		}
+	*/
+
+	if entry.Passno != 1 {
+		t.Fatalf("Expected passno to be 1, got %v", entry.Passno)
 	}
 
 	// Test the whole fstab
