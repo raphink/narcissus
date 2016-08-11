@@ -20,7 +20,6 @@ func New(aug *augeas.Augeas) *Narcissus {
 }
 
 func (n *Narcissus) Parse(val interface{}, path string) error {
-	aug := n.Augeas
 	ptr := reflect.ValueOf(val)
 	if ptr.Kind() != reflect.Ptr {
 		return fmt.Errorf("not a ptr")
@@ -33,7 +32,7 @@ func (n *Narcissus) Parse(val interface{}, path string) error {
 
 	refType := ref.Type()
 	for i := 0; i < refType.NumField(); i++ {
-		value, err := getField(aug, ref.Field(i), refType.Field(i), path)
+		value, err := n.getField(ref.Field(i), refType.Field(i), path)
 		if err != nil {
 			return err
 		}
@@ -50,20 +49,21 @@ func (n *Narcissus) Parse(val interface{}, path string) error {
 	return nil
 }
 
-func getField(aug *augeas.Augeas, field reflect.Value, fieldType reflect.StructField, path string) (interface{}, error) {
+func (n *Narcissus) getField(field reflect.Value, fieldType reflect.StructField, path string) (interface{}, error) {
 	fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
 	if field.Kind() == reflect.Slice {
-		return getSliceField(aug, fieldPath)
+		return n.getSliceField(fieldPath)
 	} else if field.Kind() == reflect.Map {
-		return getMapField(aug, field, path, fieldPath)
+		return n.getMapField(field, path, fieldPath)
 	} else {
-		return getStringField(aug, fieldType, fieldPath)
+		return n.getStringField(fieldType, fieldPath)
 	}
 	return nil, nil
 }
 
-func getStringField(aug *augeas.Augeas, fieldType reflect.StructField, fieldPath string) (string, error) {
+func (n *Narcissus) getStringField(fieldType reflect.StructField, fieldPath string) (string, error) {
 	log.Printf("Getting %s", fieldPath)
+	aug := n.Augeas
 	var value string
 	var err error
 	if fieldType.Tag.Get("value-from") == "label" {
@@ -74,7 +74,8 @@ func getStringField(aug *augeas.Augeas, fieldType reflect.StructField, fieldPath
 	return value, err
 }
 
-func getSliceField(aug *augeas.Augeas, fieldPath string) (interface{}, error) {
+func (n *Narcissus) getSliceField(fieldPath string) (interface{}, error) {
+	aug := n.Augeas
 	var values []interface{}
 	matches, err := aug.Match(fieldPath)
 	if err != nil {
@@ -90,7 +91,8 @@ func getSliceField(aug *augeas.Augeas, fieldPath string) (interface{}, error) {
 	return nil, nil
 }
 
-func getMapField(aug *augeas.Augeas, field reflect.Value, path, fieldPath string) (interface{}, error) {
+func (n *Narcissus) getMapField(field reflect.Value, path, fieldPath string) (interface{}, error) {
+	aug := n.Augeas
 	values := reflect.MakeMap(field.Type())
 	keysPath := fmt.Sprintf("%s/*", path)
 	matches, err := aug.Match(keysPath)
