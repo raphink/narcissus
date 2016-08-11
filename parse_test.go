@@ -14,7 +14,7 @@ type foo struct {
 type bar struct{}
 
 func TestParseNotAPtr(t *testing.T) {
-	aug, err := augeas.New("", "", augeas.None)
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -33,7 +33,7 @@ func TestParseNotAPtr(t *testing.T) {
 }
 
 func TestParseNotAStruct(t *testing.T) {
-	aug, err := augeas.New("", "", augeas.None)
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -51,7 +51,7 @@ func TestParseNotAStruct(t *testing.T) {
 }
 
 func TestParseFieldNotFound(t *testing.T) {
-	aug, err := augeas.New("", "", augeas.None)
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -68,7 +68,7 @@ func TestParseFieldNotFound(t *testing.T) {
 }
 
 func TestNoAugeasPathValue(t *testing.T) {
-	aug, err := augeas.New("", "", augeas.None)
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -85,7 +85,7 @@ func TestNoAugeasPathValue(t *testing.T) {
 }
 
 func TestNoAugeasPathField(t *testing.T) {
-	aug, err := augeas.New("", "", augeas.None)
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -108,8 +108,8 @@ type simpleValues struct {
 	Bool       bool   `path:"bool"`
 }
 
-func TestGetStringField(t *testing.T) {
-	aug, err := augeas.New("", "", augeas.None)
+func TestGetSimpleField(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -145,6 +145,39 @@ func TestGetStringField(t *testing.T) {
 	}
 }
 
+func TestGetSimpleFieldWrongTypes(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+	n.Augeas.Set("/test/int", "a")
+	s := &simpleValues{
+		augeasPath: "/test",
+	}
+	err = n.Parse(s)
+
+	if err == nil {
+		t.Error("Expected an error, got nil")
+	}
+
+	if err.Error() != "failed to retrieve field Int: failed to convert a to int: strconv.ParseInt: parsing \"a\": invalid syntax" {
+		t.Errorf("Expected int conversion error, got %v", err)
+	}
+
+	n.Augeas.Remove("/test/int")
+	n.Augeas.Set("/test/bool", "a")
+	err = n.Parse(s)
+
+	if err == nil {
+		t.Error("Expected an error, got nil")
+	}
+
+	if err.Error() != "failed to retrieve field Bool: failed to convert a to bool: strconv.ParseBool: parsing \"a\": invalid syntax" {
+		t.Errorf("Expected bool conversion error, got %v", err)
+	}
+}
+
 type sliceValues struct {
 	augeasPath string
 	SlStr      []string `path:"slstr"`
@@ -154,7 +187,7 @@ type sliceValues struct {
 }
 
 func TestGetSliceField(t *testing.T) {
-	aug, err := augeas.New("", "", augeas.None)
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -219,7 +252,7 @@ type mapValues struct {
 }
 
 func TestGetMapField(t *testing.T) {
-	aug, err := augeas.New("", "", augeas.None)
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
