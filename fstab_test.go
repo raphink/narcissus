@@ -14,8 +14,10 @@ func TestFstabEntry(t *testing.T) {
 	n := New(&aug)
 
 	// Test one fstab
-	entry := &FstabEntry{}
-	err = n.Parse(entry, "/files/etc/fstab/1")
+	entry := &FstabEntry{
+		augeasPath: "/files/etc/fstab/1",
+	}
+	err = n.Parse(entry)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}

@@ -8,22 +8,42 @@ import (
 )
 
 // Parse parses a structure pointer and feeds its fields with Augeas data
-func (n *Narcissus) Parse(val interface{}, path string) error {
+func (n *Narcissus) Parse(val interface{}) error {
 	ptr := reflect.ValueOf(val)
 	if ptr.Kind() != reflect.Ptr {
 		return fmt.Errorf("not a ptr")
 	}
 	ref := ptr.Elem()
-	return n.parseStruct(ref, path)
-}
 
-func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
 	if ref.Kind() != reflect.Struct {
 		return fmt.Errorf("not a struct")
 	}
 
 	refType := ref.Type()
+	var path string
+	if pType, ok := refType.FieldByName("augeasPath"); ok {
+		p := ref.FieldByName("augeasPath")
+		if pp := p.String(); pp == "" {
+			if defaultP := pType.Tag.Get("default"); defaultP != "" {
+				path = defaultP
+			} else {
+				return fmt.Errorf("no augeasPath and no default")
+			}
+		} else {
+			path = pp
+		}
+	}
+
+	return n.parseStruct(ref, path)
+}
+
+func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
+	refType := ref.Type()
 	for i := 0; i < refType.NumField(); i++ {
+		if refType.Field(i).Name == "augeasPath" {
+			// Ignore the special `augeasPath` field
+			continue
+		}
 		value, err := n.getField(ref.Field(i), refType.Field(i), path)
 		// TODO: implement omitempty
 		if err == ErrNodeNotFound {

@@ -7,12 +7,15 @@ import (
 )
 
 type foo struct {
-	A string `path:"a"`
+	augeasPath string
+	A          string `path:"a"`
 }
 
 func TestParseNotAPtr(t *testing.T) {
 	n := New(&augeas.Augeas{})
-	err := n.Parse(foo{}, "/files/some/path")
+	err := n.Parse(foo{
+		augeasPath: "/files/some/path",
+	})
 
 	if err == nil {
 		t.Error("Expected an error, got nothing")
@@ -26,7 +29,7 @@ func TestParseNotAPtr(t *testing.T) {
 func TestParseNotAStruct(t *testing.T) {
 	n := New(&augeas.Augeas{})
 	f := "foo"
-	err := n.Parse(&f, "/files/some/path")
+	err := n.Parse(&f)
 
 	if err == nil {
 		t.Error("Expected an error, got nothing")
@@ -40,7 +43,9 @@ func TestParseNotAStruct(t *testing.T) {
 func TestParseFieldNotFound(t *testing.T) {
 	n := New(&augeas.Augeas{})
 	t.Skip("This causes a segfault with the Augeas lib. Open a bug!")
-	err := n.Parse(&foo{}, "/files/some/path")
+	err := n.Parse(&foo{
+		augeasPath: "/files/some/path",
+	})
 
 	if err == nil {
 		t.Error("Expected an error, got nothing")

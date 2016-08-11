@@ -81,8 +81,10 @@ func main() {
 	}
 	n := narcissus.New(&aug)
 
-	group := &group{}
-	err = n.Parse(group, "/files/etc/group/docker")
+	group := &group{
+		augeasPath: "/files/etc/group/docker",
+	}
+	err = n.Parse(group)
 	if err != nil {
 		log.Fatalf("Expected no error, got %v", err)
 	}

@@ -8,9 +8,10 @@ import (
 )
 
 type group struct {
-	Name     string `path:"." value-from:"label"`
-	Password string `path:"password"`
-	GID      int    `path:"gid"`
+	augeasPath string
+	Name       string `path:"." value-from:"label"`
+	Password   string `path:"password"`
+	GID        int    `path:"gid"`
 }
 
 func main() {
@@ -20,16 +21,17 @@ func main() {
 	}
 	n := narcissus.New(&aug)
 
-	user := &narcissus.PasswdUser{}
-	err = n.Parse(user, "/files/etc/passwd/root")
+	user, err := n.NewPasswdUser("root")
 	if err != nil {
 		log.Fatalf("Expected no error, got %v", err)
 	}
 
 	log.Printf("UID=%v", user.Shell)
 
-	group := &group{}
-	err = n.Parse(group, "/files/etc/group/docker")
+	group := &group{
+		augeasPath: "/files/etc/group/docker",
+	}
+	err = n.Parse(group)
 	if err != nil {
 		log.Fatalf("Expected no error, got %v", err)
 	}

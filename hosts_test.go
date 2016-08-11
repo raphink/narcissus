@@ -13,8 +13,10 @@ func TestHost(t *testing.T) {
 	}
 	n := New(&aug)
 
-	host := &Host{}
-	err = n.Parse(host, "/files/etc/hosts/1")
+	host := &Host{
+		augeasPath: "/files/etc/hosts/1",
+	}
+	err = n.Parse(host)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
