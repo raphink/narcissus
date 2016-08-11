@@ -7,7 +7,7 @@ import (
 )
 
 func TestHost(t *testing.T) {
-	aug, err := augeas.New("/home/raphink/go/src/github.com/raphink/narcissus/fakeroot", "", augeas.None)
+	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -25,7 +25,7 @@ func TestHost(t *testing.T) {
 }
 
 func TestHosts(t *testing.T) {
-	aug, err := augeas.New("/home/raphink/go/src/github.com/raphink/narcissus/fakeroot", "", augeas.None)
+	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
