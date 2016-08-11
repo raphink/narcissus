@@ -1,8 +1,8 @@
 package narcissus
 
-import "log"
+import "fmt"
 
 // Write writes a structure pointer to the Augeas tree
 func (n *Narcissus) Write(val interface{}) error {
-	log.Fatal("Write is not implemented yet")
+	return fmt.Errorf("Write() is not implemented yet")
 }
