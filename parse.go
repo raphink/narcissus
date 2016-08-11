@@ -113,7 +113,7 @@ func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructF
 	aug := n.Augeas
 
 	if fieldType.Tag.Get("type") == "seq" {
-		fieldPath = fmt.Sprintf("%s/*[.=~regexp('[0-9]*')]", path)
+		fieldPath = fmt.Sprintf("%s/*[label()=~regexp('[0-9]*')]", path)
 	}
 	matches, err := aug.Match(fieldPath)
 	if err != nil {

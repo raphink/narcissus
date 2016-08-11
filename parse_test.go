@@ -150,6 +150,7 @@ type sliceValues struct {
 	SlStr      []string `path:"slstr"`
 	SlInt      []int    `path:"slint"`
 	SlBool     []bool   `path:"slbool"`
+	SlStrSeq   []string `type:"seq"`
 }
 
 func TestGetSliceField(t *testing.T) {
@@ -164,6 +165,8 @@ func TestGetSliceField(t *testing.T) {
 	n.Augeas.Set("/test/slint[2]", "2")
 	n.Augeas.Set("/test/slbool[1]", "true")
 	n.Augeas.Set("/test/slbool[2]", "false")
+	n.Augeas.Set("/test/1", "foo")
+	n.Augeas.Set("/test/2", "bar")
 	s := &sliceValues{
 		augeasPath: "/test",
 	}
@@ -172,10 +175,10 @@ func TestGetSliceField(t *testing.T) {
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
+
 	if len(s.SlStr) != 2 {
 		t.Errorf("Expected 2 elements, got %v", len(s.SlStr))
 	}
-
 	if s.SlStr[1] != "b" {
 		t.Errorf("Expected element to be b, got %s", s.SlStr[1])
 	}
@@ -183,7 +186,6 @@ func TestGetSliceField(t *testing.T) {
 	if len(s.SlInt) != 2 {
 		t.Errorf("Expected 2 elements, got %v", len(s.SlInt))
 	}
-
 	if s.SlInt[1] != 2 {
 		t.Errorf("Expected element to be 2, got %v", s.SlInt[1])
 	}
@@ -191,12 +193,17 @@ func TestGetSliceField(t *testing.T) {
 	if len(s.SlBool) != 2 {
 		t.Errorf("Expected 2 elements, got %v", len(s.SlBool))
 	}
-
 	if s.SlBool[0] != true {
 		t.Errorf("Expected element to be true, got %v", s.SlBool[0])
 	}
-
 	if s.SlBool[1] != false {
 		t.Errorf("Expected element to be false, got %v", s.SlBool[1])
+	}
+
+	if len(s.SlStrSeq) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(s.SlStrSeq))
+	}
+	if s.SlStrSeq[1] != "bar" {
+		t.Errorf("Expected element to be bar, got %s", s.SlStrSeq[1])
 	}
 }
