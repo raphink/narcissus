@@ -11,6 +11,8 @@ type foo struct {
 	A          string `path:"a"`
 }
 
+type bar struct{}
+
 func TestParseNotAPtr(t *testing.T) {
 	n := New(&augeas.Augeas{})
 	err := n.Parse(foo{
@@ -49,5 +51,31 @@ func TestParseFieldNotFound(t *testing.T) {
 
 	if err == nil {
 		t.Error("Expected an error, got nothing")
+	}
+}
+
+func TestNoAugeasPathValue(t *testing.T) {
+	n := New(&augeas.Augeas{})
+	err := n.Parse(&foo{})
+
+	if err == nil {
+		t.Error("Expected an error, got nothing")
+	}
+
+	if err.Error() != "no augeasPath value and no default" {
+		t.Errorf("Expected error no augeasPath value and no default, got %s", err.Error())
+	}
+}
+
+func TestNoAugeasPathField(t *testing.T) {
+	n := New(&augeas.Augeas{})
+	err := n.Parse(&bar{})
+
+	if err == nil {
+		t.Error("Expected an error, got nothing")
+	}
+
+	if err.Error() != "no augeasPath field" {
+		t.Errorf("Expected error no augeasPath field, got %s", err.Error())
 	}
 }
