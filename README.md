@@ -42,7 +42,7 @@ import (
 	"github.com/raphink/narcissus"
 )
 
-type Group struct {
+type group struct {
 	Name     string `path:"." value-from:"label"`
 	Password string `path:"password"`
 	Gid      int    `path:"gid"`
@@ -55,7 +55,7 @@ func main() {
 		log.Fatal("Failed to create Augeas handler")
 	}
 
-	group := &Group{}
+	group := &group{}
 	err = narcissus.Parse(aug, group, "/files/etc/group/docker")
 	if err != nil {
 		log.Fatalf("Expected no error, got %v", err)
