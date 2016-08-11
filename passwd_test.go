@@ -7,7 +7,27 @@ import (
 )
 
 func TestPasswd(t *testing.T) {
+	aug, err := augeas.New("/home/raphink/go/src/github.com/raphink/narcissus/fakeroot", "", augeas.None)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
 
+	passwd, err := n.NewPasswd()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	if len(passwd.Users) != 42 {
+		t.Errorf("Expected 42 users, got %v", len(passwd.Users))
+	}
+
+	if passwd.Users["raphink"].Uid != 1000 {
+		t.Errorf("Expected user raphink to have uid 1000, got %v", passwd.Users["raphink"].Uid)
+	}
+}
+
+func TestPasswdUser(t *testing.T) {
 	aug, err := augeas.New("/home/raphink/go/src/github.com/raphink/narcissus/fakeroot", "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -15,8 +35,7 @@ func TestPasswd(t *testing.T) {
 	n := New(&aug)
 
 	// Test one fstab
-	user := &PasswdUser{}
-	err = n.Parse(user, "/files/etc/passwd/raphink")
+	user, err := n.NewPasswdUser("raphink")
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
@@ -29,18 +48,4 @@ func TestPasswd(t *testing.T) {
 		t.Errorf("Expected uid to be 1000, got %v", user.Uid)
 	}
 
-	// Test full file
-	passwd := &Passwd{}
-	err = n.Parse(passwd, "/files/etc/passwd")
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	if len(passwd.Users) != 42 {
-		t.Errorf("Expected 42 users, got %v", len(passwd.Users))
-	}
-
-	if passwd.Users["raphink"].Uid != 1000 {
-		t.Errorf("Expected user raphink to have uid 1000, got %v", passwd.Users["raphink"].Uid)
-	}
 }

@@ -15,3 +15,15 @@ type PasswdUser struct {
 	Home     string `path:"home"`
 	Shell    string `path:"shell"`
 }
+
+func (n *Narcissus) NewPasswd() (p *Passwd, err error) {
+	p = &Passwd{}
+	err = n.Parse(p, "/files/etc/passwd")
+	return
+}
+
+func (n *Narcissus) NewPasswdUser(user string) (p *PasswdUser, err error) {
+	p = &PasswdUser{}
+	err = n.Parse(p, "/files/etc/passwd/"+user)
+	return
+}

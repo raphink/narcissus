@@ -23,8 +23,7 @@ func main() {
 	}
   n := narcissus.New(&aug)
 
-	user := &narcissus.PasswdUser{}
-	err = n.Parse(user, "/files/etc/passwd/raphink")
+	user := n.NewPasswdUser("raphink")
 	if err != nil {
 		log.Fatalf("Expected no error, got %v", err)
 	}
