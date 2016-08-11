@@ -26,7 +26,7 @@ func main() {
 
 	user := n.NewPasswdUser("raphink")
 	if err != nil {
-		log.Fatalf("Expected no error, got %v", err)
+		log.Fatalf("Failed to retrieve user: %v" err)
 	}
 
 	log.Printf("UID=%v", user.UID)
@@ -86,7 +86,7 @@ func main() {
 	}
 	err = n.Parse(group)
 	if err != nil {
-		log.Fatalf("Expected no error, got %v", err)
+		log.Fatalf("Failed to retrieve group: %v", err)
 	}
 
 	log.Printf("GID=%v", group.GID)
