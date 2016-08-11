@@ -47,3 +47,37 @@ func TestWriteNotAStruct(t *testing.T) {
 		t.Errorf("Expected error not a struct, got %s", err.Error())
 	}
 }
+
+func TestWriteNoAugeasPathValue(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+	err = n.Write(&fooWrite{})
+
+	if err == nil {
+		t.Error("Expected an error, got nothing")
+	}
+
+	if err.Error() != "undefined path: no augeasPath value and no default" {
+		t.Errorf("Expected error no augeasPath value and no default, got %s", err.Error())
+	}
+}
+
+func TestWriteNoAugeasPathField(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+	err = n.Write(&bar{})
+
+	if err == nil {
+		t.Error("Expected an error, got nothing")
+	}
+
+	if err.Error() != "undefined path: no augeasPath field" {
+		t.Errorf("Expected error no augeasPath field, got %s", err.Error())
+	}
+}
