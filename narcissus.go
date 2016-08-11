@@ -82,14 +82,14 @@ func (n *Narcissus) getSliceField(field reflect.Value, fieldPath string) (interf
 		return nil, err
 	}
 	values := reflect.MakeSlice(field.Type(), len(matches), len(matches))
-	for _, m := range matches {
+	for i, m := range matches {
 		vType := field.Type().Elem()
 		vStruct := reflect.New(vType)
 		err = n.parseStruct(vStruct.Elem(), m)
 		if err != nil {
 			return nil, err
 		}
-		values = reflect.Append(values, vStruct.Elem())
+		values.Index(i).Set(vStruct.Elem())
 	}
 	return values.Interface(), nil
 }
