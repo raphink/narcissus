@@ -1,9 +1,12 @@
 package narcissus
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"os/exec"
 	"testing"
 
 	"github.com/pmezard/go-difflib/difflib"
@@ -322,10 +325,6 @@ func wrapWrite(n *Narcissus, val interface{}, checkAugnew bool) (err error) {
 	if err != nil {
 		return fmt.Errorf("Failed writing, got %v", err)
 	}
-	err = aug.Save()
-	if err != nil {
-		return fmt.Errorf("Failed saving, got %v", err)
-	}
 	errStr, _ := aug.Get("/augeas//error/message")
 	if errStr != "" {
 		return fmt.Errorf("Failed with %s", errStr)
@@ -338,4 +337,41 @@ func wrapWrite(n *Narcissus, val interface{}, checkAugnew bool) (err error) {
 	*/
 
 	return nil
+}
+
+func ExampleNarcissus_Write() {
+	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	passwd, err := n.NewPasswd()
+	err = n.Parse(passwd)
+	if err != nil {
+		log.Fatalf("Failed to parse passwd: %v", err)
+	}
+
+	user := passwd.Users["root"]
+	fmt.Printf("Shell=%v\n", user.Shell)
+
+	user.Shell = "/bin/zsh"
+	passwd.Users["root"] = user
+
+	err = n.Write(passwd)
+	if err != nil {
+		log.Fatalf("Failed to write passwd: %v", err)
+	}
+
+	cmd := exec.Command("grep", "^root", fakeroot+"/etc/passwd.augnew")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err = cmd.Run()
+	if err != nil {
+		log.Fatalf("Failed to run grep: %v", err)
+	}
+
+	fmt.Println(out.String())
+	// Output: Shell=/bin/bash
+	// root:x:0:0:root:/root:/bin/zsh
 }

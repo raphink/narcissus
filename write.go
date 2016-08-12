@@ -18,7 +18,17 @@ func (n *Narcissus) Write(val interface{}) error {
 		return fmt.Errorf("undefined path: %v", err)
 	}
 
-	return n.writeStruct(ref, path)
+	err = n.writeStruct(ref, path)
+	if err != nil {
+		return fmt.Errorf("failed to write interface to tree: %v", err)
+	}
+
+	err = n.Augeas.Save()
+	if err != nil {
+		return fmt.Errorf("failed to save Augeas tree: %v", err)
+	}
+
+	return nil
 }
 
 func (n *Narcissus) writeStruct(ref reflect.Value, path string) error {
