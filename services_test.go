@@ -3,12 +3,13 @@ package narcissus
 import (
 	"fmt"
 	"log"
+	"os"
 	"testing"
 
 	"honnef.co/go/augeas"
 )
 
-func TestService(t *testing.T) {
+func TestParseService(t *testing.T) {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -30,7 +31,7 @@ func TestService(t *testing.T) {
 	}
 }
 
-func TestServices(t *testing.T) {
+func TestParseServices(t *testing.T) {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -44,6 +45,53 @@ func TestServices(t *testing.T) {
 
 	if len(services.Services) != 557 {
 		t.Errorf("Expected 557 services, got %v", len(services.Services))
+	}
+}
+
+func TestWriteServices(t *testing.T) {
+	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
+	aug, err := augeas.New(fakeroot, "", 2)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	// Cleanup
+	os.Remove(fakeroot + "/etc/services.augnew")
+
+	services, err := n.NewServices()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	errStr, _ := aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	err = wrapWrite(n, services, true)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	services.Services[100].Port = 42
+
+	err = wrapWrite(n, services, false)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	// check that file is changed
+	expectedDiff := `--- orig
++++ new
+@@ -113 +113 @@
+-irc		194/tcp				# Internet Relay Chat
++irc		42/tcp				# Internet Relay Chat
+`
+	diff, err := diffNewContent("/etc/services")
+	if err != nil {
+		t.Errorf("Failed to compute diff: %v", err)
+	} else if diff != expectedDiff {
+		t.Errorf("Expected diff %s, got %s", expectedDiff, diff)
 	}
 }
 
