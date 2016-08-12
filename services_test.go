@@ -1,6 +1,8 @@
 package narcissus
 
 import (
+	"fmt"
+	"log"
 	"testing"
 
 	"honnef.co/go/augeas"
@@ -43,4 +45,36 @@ func TestServices(t *testing.T) {
 	if len(services.Services) != 557 {
 		t.Errorf("Expected 557 services, got %v", len(services.Services))
 	}
+}
+
+func ExampleNarcissus_NewServices() {
+	aug, err := augeas.New("/", "", augeas.None)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	services, err := n.NewServices()
+	if err != nil {
+		log.Fatalf("Expected no error, got %v", err)
+	}
+
+	fmt.Printf("Port=%v", services.Services[0].Port)
+	// Output: Port=1
+}
+
+func ExampleNarcissus_NewService() {
+	aug, err := augeas.New("/", "", augeas.None)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	service, err := n.NewService("ssh", "tcp")
+	if err != nil {
+		log.Fatalf("Expected no error, got %v", err)
+	}
+
+	fmt.Printf("Port=%v", service.Port)
+	// Output: Port=22
 }
