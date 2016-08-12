@@ -1,6 +1,8 @@
 package narcissus
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"testing"
 
@@ -187,4 +189,20 @@ func TestWritePasswdNewUser(t *testing.T) {
 	} else if diff != expectedDiff {
 		t.Errorf("Expected diff %s, got %s", expectedDiff, diff)
 	}
+}
+
+func ExamplePasswd() {
+	aug, err := augeas.New("/", "", augeas.None)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	user, err := n.NewPasswdUser("root")
+	if err != nil {
+		log.Fatalf("Expected no error, got %v", err)
+	}
+
+	fmt.Printf("UID=%v", user.UID)
+	// Output: UID=0
 }

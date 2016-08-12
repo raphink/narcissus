@@ -28,7 +28,7 @@ func main() {
 		log.Fatalf("Expected no error, got %v", err)
 	}
 
-	log.Printf("UID=%v", user.Shell)
+	log.Printf("UID=%v", user.UID)
 
 	group := &group{
 		augeasPath: "/files/etc/group/docker",
