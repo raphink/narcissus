@@ -237,13 +237,15 @@ func TestGetSliceField(t *testing.T) {
 
 type mapValues struct {
 	augeasPath string
-	Entries    map[string]struct {
-		Str   string   `path:"str"`
-		Int   int      `path:"int"`
-		Bool  bool     `path:"bool"`
-		SlStr []string `path:"slstr"`
-	} `path:"mstruct"`
-	MStr map[string]string `path:"sub/*" key:"label"`
+	Entries    map[string]mapEntry `path:"mstruct"`
+	MStr       map[string]string   `path:"sub/*" key:"label"`
+}
+
+type mapEntry struct {
+	Str   string   `path:"str"`
+	Int   int      `path:"int"`
+	Bool  bool     `path:"bool"`
+	SlStr []string `path:"slstr"`
 }
 
 func TestGetMapField(t *testing.T) {

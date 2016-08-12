@@ -175,3 +175,71 @@ func TestWriteSliceField(t *testing.T) {
 		t.Errorf("Expected element to be bar, got %s", got)
 	}
 }
+
+func TestWriteMapField(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+	m := &mapValues{
+		augeasPath: "/test",
+		Entries: map[string]mapEntry{
+			"one": mapEntry{
+				Str:   "a",
+				Int:   42,
+				Bool:  true,
+				SlStr: []string{"alpha", "beta"},
+			},
+			"two": mapEntry{
+				Str:   "b",
+				Int:   43,
+				Bool:  false,
+				SlStr: []string{"gamma", "delta"},
+			},
+		},
+		MStr: map[string]string{
+			"a": "aleph",
+			"b": "beth",
+		},
+	}
+	err = n.Write(m)
+
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	matches, _ := n.Augeas.Match("/test/mstruct")
+	if len(matches) != 2 {
+		t.Errorf("Expected 2 entries, got %v", len(matches))
+	}
+	got, _ := n.Augeas.Get("/test/mstruct[.='two']/str")
+	if got != "b" {
+		t.Errorf("Expected element to be b, got %s", got)
+	}
+	got, _ = n.Augeas.Get("/test/mstruct[.='two']/int")
+	if got != "43" {
+		t.Errorf("Expected element to be 43, got %s", got)
+	}
+	got, _ = n.Augeas.Get("/test/mstruct[.='two']/bool")
+	if got != "false" {
+		t.Errorf("Expected element to be false, got %s", got)
+	}
+	matches, _ = n.Augeas.Match("/test/mstruct[.='two']/slstr")
+	if len(matches) != 2 {
+		t.Errorf("Expected 2 entries, got %v", len(matches))
+	}
+	got, _ = n.Augeas.Get("/test/mstruct[.='two']/slstr[2]")
+	if got != "delta" {
+		t.Errorf("Expected element to be delta, got %v", got)
+	}
+
+	matches, _ = n.Augeas.Match("/test/sub/*")
+	if len(matches) != 2 {
+		t.Errorf("Expected 2 entries, got %v", len(matches))
+	}
+	got, _ = n.Augeas.Get("/test/sub/b")
+	if got != "beth" {
+		t.Errorf("Expected element to be beth, got %s", got)
+	}
+}

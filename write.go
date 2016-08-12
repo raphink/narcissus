@@ -3,6 +3,7 @@ package narcissus
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // Write writes a structure pointer to the Augeas tree
@@ -41,7 +42,7 @@ func (n *Narcissus) writeField(field reflect.Value, fieldType reflect.StructFiel
 	if field.Kind() == reflect.Slice {
 		return n.writeSliceField(field, fieldType, path, fieldPath)
 	} else if field.Kind() == reflect.Map {
-		return n.writeMapField(field, fieldType, fieldPath)
+		return n.writeMapField(field, fieldType, path, fieldPath)
 	}
 	return n.writeSimpleField(field, fieldPath, fieldType.Tag)
 }
@@ -71,6 +72,30 @@ func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.Struc
 	return nil
 }
 
-func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructField, fieldPath string) error {
+func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) error {
+	for _, k := range field.MapKeys() {
+		value := field.MapIndex(k)
+		var p string
+		if strings.HasSuffix(fieldPath, "/*") {
+			// TrimSuffix? ouch!
+			p = fmt.Sprintf("%s/%s", strings.TrimSuffix(fieldPath, "/*"), k)
+		} else {
+			p = fmt.Sprintf("%s[.='%s']", fieldPath, k)
+		}
+		if value.Kind() == reflect.Struct {
+			keyPath := fmt.Sprintf("%s[.='%s']", fieldPath, k)
+			err := n.writeSimpleField(k, keyPath, fieldType.Tag)
+			if err != nil {
+				return fmt.Errorf("failed to write map value: %v", err)
+			}
+			n.writeStruct(value, p)
+		} else {
+			err := n.writeSimpleField(value, p, fieldType.Tag)
+			if err != nil {
+				return fmt.Errorf("failed to write map value: %v", err)
+			}
+		}
+	}
+
 	return nil
 }
