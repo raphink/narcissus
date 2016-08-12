@@ -145,6 +145,81 @@ func TestWriteFstab(t *testing.T) {
 	}
 }
 
+func TestWriteFstabNewEntry(t *testing.T) {
+	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
+	aug, err := augeas.New(fakeroot, "", 2)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	// Cleanup
+	os.Remove(fakeroot + "/etc/fstab.augnew")
+
+	fstab, err := n.NewFstab()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	err = n.Write(fstab)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	errStr, _ := aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	// check that file is unchanged
+	if f, err := os.Stat(fakeroot + "/etc/fstab.augnew"); err == nil && f.Mode().IsRegular() {
+		t.Errorf("Expected augnew file to be absent, was present")
+	}
+
+	tab := FstabEntry{
+		Spec:    "/dev/foo",
+		File:    "/foo",
+		Vfstype: "ext4",
+		Opt: map[string]FstabOpt{
+			"defaults": FstabOpt{},
+		},
+		Dump:   0,
+		Passno: 0,
+	}
+	fstab.Entries = append(fstab.Entries, tab)
+
+	err = n.Write(fstab)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	errStr, _ = aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	// check that file is changed
+	expectedDiff := `--- orig
++++ new
+@@ -11,0 +12 @@
++/dev/foo	/foo	ext4	defaults	0 0
+`
+	diff, err := diffNewContent("/etc/fstab")
+	if err != nil {
+		t.Errorf("Failed to compute diff: %v", err)
+	} else if diff != expectedDiff {
+		t.Errorf("Expected diff %s, got %s", expectedDiff, diff)
+	}
+}
+
 func ExampleNarcissus_NewFstab() {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {

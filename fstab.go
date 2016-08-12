@@ -12,14 +12,17 @@ type Fstab struct {
 // FstabEntry maps an Fstab entry
 type FstabEntry struct {
 	augeasPath string
-	Spec       string `path:"spec"`
-	File       string `path:"file"`
-	Vfstype    string `path:"vfstype"`
-	Opt        map[string]struct {
-		Value string `path:"value"`
-	} `path:"opt"`
-	Dump   int `path:"dump"`
-	Passno int `path:"passno"`
+	Spec       string              `path:"spec"`
+	File       string              `path:"file"`
+	Vfstype    string              `path:"vfstype"`
+	Opt        map[string]FstabOpt `path:"opt"`
+	Dump       int                 `path:"dump"`
+	Passno     int                 `path:"passno"`
+}
+
+// FstabOpt is an FstabEntry opt
+type FstabOpt struct {
+	Value string `path:"value"`
 }
 
 // NewFstab returns a new Fstab structure
