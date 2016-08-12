@@ -30,6 +30,14 @@ func main() {
 	}
 
 	log.Printf("UID=%v", user.UID)
+
+	// Modify UID
+	user.UID = 42
+  
+	err = n.Write(user)
+	if err != nil {
+		log.Fatalf("Failed to save user: %v", err)
+	}
 }
 ```
 
