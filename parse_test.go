@@ -350,7 +350,7 @@ func TestSetField(t *testing.T) {
 	}
 }
 
-func ExampleNarcissusParse() {
+func ExampleNarcissus_Parse() {
 	type group struct {
 		augeasPath string
 		Name       string   `path:"." value-from:"label"`
