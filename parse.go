@@ -143,12 +143,22 @@ func (n *Narcissus) getMapField(field reflect.Value, fieldType reflect.StructFie
 			return nil, err
 		}
 		vType := field.Type().Elem()
-		vStruct := reflect.New(vType)
-		err = n.parseStruct(vStruct.Elem(), m)
-		if err != nil {
-			return nil, err
+		var value reflect.Value
+		if vType.Kind() == reflect.Struct {
+			vStruct := reflect.New(vType)
+			err = n.parseStruct(vStruct.Elem(), m)
+			if err != nil {
+				return nil, err
+			}
+			value = vStruct.Elem()
+		} else {
+			val, err := n.getSimpleField(vType, m, "")
+			if err != nil {
+				return nil, fmt.Errorf("failed to get slice element: %v", err)
+			}
+			value = reflect.ValueOf(val)
 		}
-		values.SetMapIndex(reflect.ValueOf(label), vStruct.Elem())
+		values.SetMapIndex(reflect.ValueOf(label), value)
 	}
 	return values.Interface(), nil
 }

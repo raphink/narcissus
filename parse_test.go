@@ -249,6 +249,7 @@ type mapValues struct {
 		Bool  bool     `path:"bool"`
 		SlStr []string `path:"slstr"`
 	} `path:"mstruct"`
+	MStr map[string]string `path:"sub/*" key:"label"`
 }
 
 func TestGetMapField(t *testing.T) {
@@ -269,6 +270,8 @@ func TestGetMapField(t *testing.T) {
 	n.Augeas.Set("/test/mstruct[2]/bool", "false")
 	n.Augeas.Set("/test/mstruct[2]/slstr[1]", "gamma")
 	n.Augeas.Set("/test/mstruct[2]/slstr[2]", "delta")
+	n.Augeas.Set("/test/sub/a", "aleph")
+	n.Augeas.Set("/test/sub/b", "beth")
 	m := &mapValues{
 		augeasPath: "/test",
 	}
@@ -283,6 +286,25 @@ func TestGetMapField(t *testing.T) {
 	}
 	if m.Entries["two"].Str != "b" {
 		t.Errorf("Expected element to be b, got %s", m.Entries["two"].Str)
+	}
+	if m.Entries["two"].Int != 43 {
+		t.Errorf("Expected element to be 43, got %s", m.Entries["two"].Int)
+	}
+	if m.Entries["two"].Bool != false {
+		t.Errorf("Expected element to be false, got %s", m.Entries["two"].Bool)
+	}
+	if len(m.Entries["two"].SlStr) != 2 {
+		t.Errorf("Expected 2 entries, got %v", len(m.Entries["two"].SlStr))
+	}
+	if m.Entries["two"].SlStr[1] != "delta" {
+		t.Errorf("Expected element to be delta, got %v", m.Entries["two"].SlStr[1])
+	}
+
+	if len(m.MStr) != 2 {
+		t.Errorf("Expected 2 entries, got %v", len(m.MStr))
+	}
+	if m.MStr["b"] != "beth" {
+		t.Errorf("Expected element to be beth, got %s", m.MStr["b"])
 	}
 }
 
