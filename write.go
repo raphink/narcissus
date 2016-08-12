@@ -85,7 +85,7 @@ func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.Struc
 	return nil
 }
 
-func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) error {
+func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) (err error) {
 	for _, k := range field.MapKeys() {
 		value := field.MapIndex(k)
 		var p string
@@ -96,9 +96,11 @@ func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructF
 			p = fmt.Sprintf("%s[.='%s']", fieldPath, k)
 		}
 		if value.Kind() == reflect.Struct {
-			err := n.writeSimpleField(k, p, fieldType.Tag)
-			if err != nil {
-				return fmt.Errorf("failed to write map key: %v", err)
+			if fieldType.Tag.Get("key") != "label" {
+				err = n.writeSimpleField(k, p, fieldType.Tag)
+				if err != nil {
+					return fmt.Errorf("failed to write map key: %v", err)
+				}
 			}
 			err = n.writeStruct(value, p)
 			if err != nil {
