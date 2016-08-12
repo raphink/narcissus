@@ -74,6 +74,11 @@ func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.Struc
 		} else {
 			p = fmt.Sprintf("%s[%v]", fieldPath, i+1)
 		}
+		// Create base node
+		err := n.Augeas.Clear(p)
+		if err != nil {
+			return fmt.Errorf("failed to create base path for slice: %v", err)
+		}
 		if value.Kind() == reflect.Struct {
 			err := n.writeStruct(value, p)
 			if err != nil {
