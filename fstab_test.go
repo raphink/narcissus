@@ -76,8 +76,8 @@ func TestFstab(t *testing.T) {
 }
 
 func TestWriteFstab(t *testing.T) {
-	// FIXME: use augeas.SaveNewFile, but it is broken?
-	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
+	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
+	aug, err := augeas.New(fakeroot, "", 2)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
