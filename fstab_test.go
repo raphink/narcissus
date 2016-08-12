@@ -174,6 +174,51 @@ func TestWriteFstabNewEntry(t *testing.T) {
 	}
 }
 
+func TestWriteFstabDeleteEntry(t *testing.T) {
+	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
+	aug, err := augeas.New(fakeroot, "", 2)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	// Cleanup
+	os.Remove(fakeroot + "/etc/fstab.augnew")
+
+	fstab, err := n.NewFstab()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	err = wrapWrite(n, fstab, true)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	// Remove fstab.Entries[1]
+	fstab.Entries = append(fstab.Entries[:1], fstab.Entries[2:]...)
+
+	t.Skip("Slice purge not implemented")
+
+	err = wrapWrite(n, fstab, false)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	// check that file is changed
+	expectedDiff := `--- orig
++++ new
+@@ -11,0 +12 @@
++/dev/foo	/foo	ext4	defaults	0 0
+`
+	diff, err := diffNewContent("/etc/fstab")
+	if err != nil {
+		t.Errorf("Failed to compute diff: %v", err)
+	} else if diff != expectedDiff {
+		t.Errorf("Expected diff %s, got %s", expectedDiff, diff)
+	}
+}
+
 func ExampleNarcissus_NewFstab() {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
