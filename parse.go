@@ -145,14 +145,14 @@ func (n *Narcissus) getStructOrSimpleField(field reflect.Value, path string) (va
 		vStruct := reflect.New(vType)
 		err = n.parseStruct(vStruct.Elem(), path)
 		if err != nil {
-			err = fmt.Errorf("failed to get slice element: %v", err)
+			err = fmt.Errorf("failed to get element: %v", err)
 			return
 		}
 		return vStruct.Elem(), nil
 	}
 	val, err := n.getSimpleField(vType, path, "")
 	if err != nil {
-		err = fmt.Errorf("failed to get slice element: %v", err)
+		err = fmt.Errorf("failed to get element: %v", err)
 		return
 	}
 	return reflect.ValueOf(val), nil
