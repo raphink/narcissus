@@ -1,6 +1,8 @@
 package narcissus
 
 import (
+	"fmt"
+	"log"
 	"testing"
 
 	"honnef.co/go/augeas"
@@ -346,4 +348,31 @@ func TestSetField(t *testing.T) {
 	if err.Error() != "cannot set field a" {
 		t.Errorf("Expected setField error, got %v", err)
 	}
+}
+
+func ExampleParse() {
+	type group struct {
+		augeasPath string
+		Name       string   `path:"." value-from:"label"`
+		Password   string   `path:"password"`
+		GID        int      `path:"gid"`
+		Users      []string `path:"user"`
+	}
+
+	aug, err := augeas.New("/", "", augeas.None)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	g := &group{
+		augeasPath: "/files/etc/group/adm",
+	}
+	err = n.Parse(g)
+	if err != nil {
+		log.Fatalf("Expected no error, got %v", err)
+	}
+
+	fmt.Printf("GID=%v", g.GID)
+	// Output: GID=4
 }
