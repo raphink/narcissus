@@ -43,11 +43,15 @@ func (n *Narcissus) writeField(field reflect.Value, fieldType reflect.StructFiel
 	} else if field.Kind() == reflect.Map {
 		return n.writeMapField(field, fieldType, fieldPath)
 	}
-	return n.writeSimpleField(fieldType.Type, fieldPath, fieldType.Tag)
+	return n.writeSimpleField(field, fieldType.Type, fieldPath, fieldType.Tag)
 }
 
-func (n *Narcissus) writeSimpleField(fieldType reflect.Type, fieldPath string, tag reflect.StructTag) error {
-	return nil
+func (n *Narcissus) writeSimpleField(field reflect.Value, fieldType reflect.Type, fieldPath string, tag reflect.StructTag) error {
+	aug := n.Augeas
+	// There might be a better way to convert, but that does it
+	value := fmt.Sprintf("%v", field.Interface())
+	err := aug.Set(fieldPath, value)
+	return err
 }
 
 func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) error {

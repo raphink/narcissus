@@ -81,3 +81,37 @@ func TestWriteNoAugeasPathField(t *testing.T) {
 		t.Errorf("Expected error no augeasPath field, got %s", err.Error())
 	}
 }
+
+func TestWriteSimpleField(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+	s := &simpleValues{
+		augeasPath: "/test",
+		Str:        "foo",
+		Int:        42,
+		Bool:       true,
+	}
+	err = n.Write(s)
+
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	got, _ := n.Augeas.Get("/test/str")
+	if got != "foo" {
+		t.Errorf("Expected foo, got %s", got)
+	}
+
+	got, _ = n.Augeas.Get("/test/int")
+	if got != "42" {
+		t.Errorf("Expected 42, got %v", got)
+	}
+
+	got, _ = n.Augeas.Get("/test/bool")
+	if got != "true" {
+		t.Errorf("Expected true, got %v", got)
+	}
+}

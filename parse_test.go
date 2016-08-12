@@ -117,12 +117,6 @@ func TestGetSimpleField(t *testing.T) {
 	n.Augeas.Set("/test/str", "foo")
 	n.Augeas.Set("/test/int", "42")
 	n.Augeas.Set("/test/bool", "true")
-	n.Augeas.Set("/test/slstr[1]", "a")
-	n.Augeas.Set("/test/slstr[2]", "b")
-	n.Augeas.Set("/test/slint[1]", "1")
-	n.Augeas.Set("/test/slint[2]", "2")
-	n.Augeas.Set("/test/slbool[1]", "true")
-	n.Augeas.Set("/test/slbool[2]", "false")
 	s := &simpleValues{
 		augeasPath: "/test",
 	}
