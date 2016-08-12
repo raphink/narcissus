@@ -83,8 +83,7 @@ func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructF
 			p = fmt.Sprintf("%s[.='%s']", fieldPath, k)
 		}
 		if value.Kind() == reflect.Struct {
-			keyPath := fmt.Sprintf("%s[.='%s']", fieldPath, k)
-			err := n.writeSimpleField(k, keyPath, fieldType.Tag)
+			err := n.writeSimpleField(k, p, fieldType.Tag)
 			if err != nil {
 				return fmt.Errorf("failed to write map value: %v", err)
 			}
