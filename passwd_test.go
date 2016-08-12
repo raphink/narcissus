@@ -51,6 +51,7 @@ func TestParsePasswdUser(t *testing.T) {
 }
 
 func TestWritePasswd(t *testing.T) {
+	// FIXME: use augeas.SaveNewFile, but it is broken?
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -61,6 +62,10 @@ func TestWritePasswd(t *testing.T) {
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
+	errStr, _ := aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
 
 	err = n.Write(passwd)
 	if err != nil {
@@ -69,6 +74,11 @@ func TestWritePasswd(t *testing.T) {
 	err = aug.Save()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
+	}
+
+	errStr, _ = aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
 	}
 
 	// TODO: check that file is unchanged
@@ -86,10 +96,10 @@ func TestWritePasswd(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	t.Skip("Saving fails for now")
-
-	errStr, _ := aug.Get("/augeas//error/message")
+	errStr, _ = aug.Get("/augeas//error/message")
 	if errStr != "" {
 		t.Errorf("Failed with %s", errStr)
 	}
+
+	// TODO: check that file is changed
 }

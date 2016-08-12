@@ -56,6 +56,11 @@ func (n *Narcissus) writeSimpleField(field reflect.Value, fieldPath string, tag 
 		return nil
 	}
 
+	// FIXME: use omitempty for that
+	if value == "" {
+		return nil
+	}
+
 	err := aug.Set(fieldPath, value)
 	return err
 }
