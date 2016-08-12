@@ -174,10 +174,11 @@ func TestGetSimpleFieldWrongTypes(t *testing.T) {
 
 type sliceValues struct {
 	augeasPath string
-	SlStr      []string `path:"slstr"`
-	SlInt      []int    `path:"slint"`
-	SlBool     []bool   `path:"slbool"`
-	SlStrSeq   []string `type:"seq"`
+	SlStr      []string   `path:"slstr"`
+	SlInt      []int      `path:"slint"`
+	SlBool     []bool     `path:"slbool"`
+	SlStrSeq   []string   `type:"seq"`
+	SlStruct   []mapEntry `path:"mapentry"`
 }
 
 func TestGetSliceField(t *testing.T) {
@@ -194,6 +195,16 @@ func TestGetSliceField(t *testing.T) {
 	n.Augeas.Set("/test/slbool[2]", "false")
 	n.Augeas.Set("/test/1", "foo")
 	n.Augeas.Set("/test/2", "bar")
+	n.Augeas.Set("/test/mapentry[1]/str", "foo")
+	n.Augeas.Set("/test/mapentry[1]/int", "314")
+	n.Augeas.Set("/test/mapentry[1]/bool", "true")
+	n.Augeas.Set("/test/mapentry[1]/slstr[1]", "aleph")
+	n.Augeas.Set("/test/mapentry[1]/slstr[2]", "beth")
+	n.Augeas.Set("/test/mapentry[2]/str", "bar")
+	n.Augeas.Set("/test/mapentry[2]/int", "315")
+	n.Augeas.Set("/test/mapentry[2]/bool", "false")
+	n.Augeas.Set("/test/mapentry[2]/slstr[1]", "gimel")
+	n.Augeas.Set("/test/mapentry[2]/slstr[2]", "daleth")
 	s := &sliceValues{
 		augeasPath: "/test",
 	}
@@ -232,6 +243,13 @@ func TestGetSliceField(t *testing.T) {
 	}
 	if s.SlStrSeq[1] != "bar" {
 		t.Errorf("Expected element to be bar, got %s", s.SlStrSeq[1])
+	}
+
+	if len(s.SlStruct) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(s.SlStruct))
+	}
+	if s.SlStruct[1].SlStr[1] != "daleth" {
+		t.Errorf("Expected element to be daleth, got %s", s.SlStruct[1].SlStr[1])
 	}
 }
 
