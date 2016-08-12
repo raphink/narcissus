@@ -103,3 +103,7 @@ func TestWritePasswd(t *testing.T) {
 
 	// TODO: check that file is changed
 }
+
+func TestWritePasswdNewUser(t *testing.T) {
+	t.Skip("TO BE IMPLEMENTED")
+}
