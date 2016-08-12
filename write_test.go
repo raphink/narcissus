@@ -320,11 +320,11 @@ func wrapWrite(n *Narcissus, val interface{}, checkAugnew bool) (err error) {
 	aug := n.Augeas
 	err = n.Write(val)
 	if err != nil {
-		return fmt.Errorf("Expected no error, got %v", err)
+		return fmt.Errorf("Failed writing, got %v", err)
 	}
 	err = aug.Save()
 	if err != nil {
-		return fmt.Errorf("Expected no error, got %v", err)
+		return fmt.Errorf("Failed saving, got %v", err)
 	}
 	errStr, _ := aug.Get("/augeas//error/message")
 	if errStr != "" {
