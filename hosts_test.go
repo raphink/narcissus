@@ -3,12 +3,13 @@ package narcissus
 import (
 	"fmt"
 	"log"
+	"os"
 	"testing"
 
 	"honnef.co/go/augeas"
 )
 
-func TestHost(t *testing.T) {
+func TestParseHost(t *testing.T) {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -28,7 +29,7 @@ func TestHost(t *testing.T) {
 	}
 }
 
-func TestHosts(t *testing.T) {
+func TestParseHosts(t *testing.T) {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -50,6 +51,76 @@ func TestHosts(t *testing.T) {
 
 	if len(hosts.Hosts[2].Aliases) != 2 {
 		t.Errorf("Expected 2 aliases, got %v", len(hosts.Hosts[2].Aliases))
+	}
+}
+
+func TestWriteHosts(t *testing.T) {
+	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
+	aug, err := augeas.New(fakeroot, "", 2)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	// Cleanup
+	os.Remove(fakeroot + "/etc/hosts.augnew")
+
+	hosts, err := n.NewHosts()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	errStr, _ := aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	err = n.Write(hosts)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	errStr, _ = aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	// check that file is unchanged
+	if f, err := os.Stat(fakeroot + "/etc/hosts.augnew"); err == nil && f.Mode().IsRegular() {
+		t.Errorf("Expected augnew file to be absent, was present")
+	}
+
+	hosts.Hosts[0].Canonical = "foo"
+
+	err = n.Write(hosts)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	errStr, _ = aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	// check that file is changed
+	expectedDiff := `--- orig
++++ new
+@@ -1 +1 @@
+-127.0.0.1	localhost
++127.0.0.1	foo
+`
+	diff, err := diffNewContent("/etc/hosts")
+	if err != nil {
+		t.Errorf("Failed to compute diff: %v", err)
+	} else if diff != expectedDiff {
+		t.Errorf("Expected diff %s, got %s", expectedDiff, diff)
 	}
 }
 
