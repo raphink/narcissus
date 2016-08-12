@@ -145,7 +145,7 @@ func TestWriteFstab(t *testing.T) {
 	}
 }
 
-func ExampleFstab() {
+func ExampleNarcissus_NewFstab() {
 	aug, err := augeas.New("/", "", augeas.None)
 	if err != nil {
 		log.Fatal("Failed to create Augeas handler")

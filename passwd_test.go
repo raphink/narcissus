@@ -191,7 +191,7 @@ func TestWritePasswdNewUser(t *testing.T) {
 	}
 }
 
-func ExamplePasswd() {
+func ExampleNarcissus_NewPasswd() {
 	aug, err := augeas.New("/", "", augeas.None)
 	if err != nil {
 		log.Fatal("Failed to create Augeas handler")
@@ -207,7 +207,7 @@ func ExamplePasswd() {
 	// Output: UID=0
 }
 
-func ExamplePasswdUser() {
+func ExampleNarcissus_NewPasswdUser() {
 	aug, err := augeas.New("/", "", augeas.None)
 	if err != nil {
 		log.Fatal("Failed to create Augeas handler")
