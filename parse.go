@@ -104,21 +104,9 @@ func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructF
 	}
 	values := reflect.MakeSlice(field.Type(), len(matches), len(matches))
 	for i, m := range matches {
-		vType := field.Type().Elem()
-		var value reflect.Value
-		if vType.Kind() == reflect.Struct {
-			vStruct := reflect.New(vType)
-			err = n.parseStruct(vStruct.Elem(), m)
-			if err != nil {
-				return nil, fmt.Errorf("failed to get slice element: %v", err)
-			}
-			value = vStruct.Elem()
-		} else {
-			val, err := n.getSimpleField(vType, m, "")
-			if err != nil {
-				return nil, fmt.Errorf("failed to get slice element: %v", err)
-			}
-			value = reflect.ValueOf(val)
+		value, err := n.getStructOrSimpleField(field, m)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to get slice element: %v", err)
 		}
 		values.Index(i).Set(value)
 	}
@@ -142,25 +130,32 @@ func (n *Narcissus) getMapField(field reflect.Value, fieldType reflect.StructFie
 		if err != nil {
 			return nil, err
 		}
-		vType := field.Type().Elem()
-		var value reflect.Value
-		if vType.Kind() == reflect.Struct {
-			vStruct := reflect.New(vType)
-			err = n.parseStruct(vStruct.Elem(), m)
-			if err != nil {
-				return nil, err
-			}
-			value = vStruct.Elem()
-		} else {
-			val, err := n.getSimpleField(vType, m, "")
-			if err != nil {
-				return nil, fmt.Errorf("failed to get slice element: %v", err)
-			}
-			value = reflect.ValueOf(val)
+		value, err := n.getStructOrSimpleField(field, m)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to get map element: %v", err)
 		}
 		values.SetMapIndex(reflect.ValueOf(label), value)
 	}
 	return values.Interface(), nil
+}
+
+func (n *Narcissus) getStructOrSimpleField(field reflect.Value, path string) (value reflect.Value, err error) {
+	vType := field.Type().Elem()
+	if vType.Kind() == reflect.Struct {
+		vStruct := reflect.New(vType)
+		err = n.parseStruct(vStruct.Elem(), path)
+		if err != nil {
+			err = fmt.Errorf("failed to get slice element: %v", err)
+			return
+		}
+		return vStruct.Elem(), nil
+	}
+	val, err := n.getSimpleField(vType, path, "")
+	if err != nil {
+		err = fmt.Errorf("failed to get slice element: %v", err)
+		return
+	}
+	return reflect.ValueOf(val), nil
 }
 
 func setField(field reflect.Value, fieldType reflect.StructField, value interface{}) error {
