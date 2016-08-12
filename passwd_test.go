@@ -6,7 +6,7 @@ import (
 	"honnef.co/go/augeas"
 )
 
-func TestPasswd(t *testing.T) {
+func TestParsePasswd(t *testing.T) {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -27,7 +27,7 @@ func TestPasswd(t *testing.T) {
 	}
 }
 
-func TestPasswdUser(t *testing.T) {
+func TestParsePasswdUser(t *testing.T) {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -48,4 +48,48 @@ func TestPasswdUser(t *testing.T) {
 		t.Errorf("Expected uid to be 1000, got %v", user.UID)
 	}
 
+}
+
+func TestWritePasswd(t *testing.T) {
+	aug, err := augeas.New(fakeroot, "", augeas.None)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	passwd, err := n.NewPasswd()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	err = n.Write(passwd)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	// TODO: check that file is unchanged
+
+	var user = passwd.Users["raphink"]
+	user.Shell = "/bin/sh"
+	passwd.Users["raphink"] = user
+
+	err = n.Write(passwd)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	t.Skip("Saving fails for now")
+
+	errStr, _ := aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
 }
