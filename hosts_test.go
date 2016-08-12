@@ -1,6 +1,8 @@
 package narcissus
 
 import (
+	"fmt"
+	"log"
 	"testing"
 
 	"honnef.co/go/augeas"
@@ -49,4 +51,20 @@ func TestHosts(t *testing.T) {
 	if len(hosts.Hosts[2].Aliases) != 2 {
 		t.Errorf("Expected 2 aliases, got %v", len(hosts.Hosts[2].Aliases))
 	}
+}
+
+func ExampleNarcissus_NewHosts() {
+	aug, err := augeas.New("/", "", augeas.None)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	hosts, err := n.NewHosts()
+	if err != nil {
+		log.Fatalf("Expected no error, got %v", err)
+	}
+
+	fmt.Printf("Canonical=%v", hosts.Hosts[0].Canonical)
+	// Output: Canonical=localhost
 }
