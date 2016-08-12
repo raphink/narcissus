@@ -115,3 +115,63 @@ func TestWriteSimpleField(t *testing.T) {
 		t.Errorf("Expected true, got %v", got)
 	}
 }
+
+func TestWriteSliceField(t *testing.T) {
+	aug, err := augeas.New("", "", augeas.NoModlAutoload)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+	s := &sliceValues{
+		augeasPath: "/test",
+		SlStr:      []string{"a", "b"},
+		SlInt:      []int{1, 2},
+		SlBool:     []bool{true, false},
+		SlStrSeq:   []string{"foo", "bar"},
+	}
+	err = n.Write(s)
+
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	matches, _ := n.Augeas.Match("/test/slstr")
+	if len(matches) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(matches))
+	}
+	got, _ := n.Augeas.Get("/test/slstr[2]")
+	if got != "b" {
+		t.Errorf("Expected element to be b, got %s", got)
+	}
+
+	matches, _ = n.Augeas.Match("/test/slint")
+	if len(matches) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(matches))
+	}
+	got, _ = n.Augeas.Get("/test/slint[2]")
+	if got != "2" {
+		t.Errorf("Expected element to be 2, got %v", got)
+	}
+
+	matches, _ = n.Augeas.Match("/test/slbool")
+	if len(matches) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(matches))
+	}
+	got, _ = n.Augeas.Get("/test/slbool[1]")
+	if got != "true" {
+		t.Errorf("Expected element to be true, got %v", got)
+	}
+	got, _ = n.Augeas.Get("/test/slbool[2]")
+	if got != "false" {
+		t.Errorf("Expected element to be false, got %v", got)
+	}
+
+	matches, _ = n.Augeas.Match("/test/*[label()=~regexp('[0-9]*')]")
+	if len(matches) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(matches))
+	}
+	got, _ = n.Augeas.Get("/test/2")
+	if got != "bar" {
+		t.Errorf("Expected element to be bar, got %s", got)
+	}
+}
