@@ -65,6 +65,6 @@ func ExampleNarcissus_NewHosts() {
 		log.Fatalf("Expected no error, got %v", err)
 	}
 
-	fmt.Printf("Canonical=%v", hosts.Hosts[0].Canonical)
-	// Output: Canonical=localhost
+	fmt.Printf("IP=%v", hosts.Hosts[0].IPAddress)
+	// Output: IP=127.0.0.1
 }
