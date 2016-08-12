@@ -180,7 +180,7 @@ func ExampleNarcissus_NewPasswdUser() {
 }
 
 func ExampleNarcissus_NewPasswdUserToPasswd() {
-	aug, err := augeas.New(fakeroot, "", augeas.None)
+	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
 	if err != nil {
 		log.Fatal("Failed to create Augeas handler")
 	}
