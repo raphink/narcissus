@@ -202,7 +202,7 @@ func ExampleNarcissus_NewPasswd() {
 
 	passwd, err := n.NewPasswd()
 	if err != nil {
-		log.Fatalf("Expected no error, got %v", err)
+		log.Fatalf("Failed to parse passwd: %v", err)
 	}
 
 	fmt.Printf("UID=%v", passwd.Users["root"].UID)
@@ -218,9 +218,40 @@ func ExampleNarcissus_NewPasswdUser() {
 
 	user, err := n.NewPasswdUser("root")
 	if err != nil {
-		log.Fatalf("Expected no error, got %v", err)
+		log.Fatalf("Failed to parse user: %v", err)
 	}
 
 	fmt.Printf("UID=%v", user.UID)
 	// Output: UID=0
+}
+
+func ExampleNarcissus_NewPasswdUserToPasswd() {
+	aug, err := augeas.New(fakeroot, "", augeas.None)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	passwd, err := n.NewPasswd()
+	if err != nil {
+		log.Fatalf("Failed to parse passwd: %v", err)
+	}
+
+	// Retrieves user if exists, empty user otherwise
+	user, err := n.NewPasswdUser("foo")
+	user.UID = 314
+	user.GID = 314
+	user.Name = "Foo Bar"
+	user.Home = "/home/foo"
+	user.Shell = "/bin/sh"
+	user.Password = "XXX"
+	passwd.Users["foo"] = *user
+
+	err = n.Write(passwd)
+	if err != nil {
+		log.Fatalf("Failed to write passwd: %v", err)
+	}
+
+	fmt.Printf("UID=%v", passwd.Users["foo"].UID)
+	// Output: UID=314
 }
