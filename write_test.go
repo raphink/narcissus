@@ -128,6 +128,20 @@ func TestWriteSliceField(t *testing.T) {
 		SlInt:      []int{1, 2},
 		SlBool:     []bool{true, false},
 		SlStrSeq:   []string{"foo", "bar"},
+		SlStruct: []mapEntry{
+			mapEntry{
+				Str:   "foo",
+				Int:   314,
+				Bool:  true,
+				SlStr: []string{"aleph", "beth"},
+			},
+			mapEntry{
+				Str:   "bar",
+				Int:   315,
+				Bool:  false,
+				SlStr: []string{"gimel", "daleth"},
+			},
+		},
 	}
 	err = n.Write(s)
 
@@ -173,6 +187,23 @@ func TestWriteSliceField(t *testing.T) {
 	got, _ = n.Augeas.Get("/test/2")
 	if got != "bar" {
 		t.Errorf("Expected element to be bar, got %s", got)
+	}
+
+	matches, _ = n.Augeas.Match("/test/mapentry")
+	if len(matches) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(matches))
+	}
+	got, _ = n.Augeas.Get("/test/mapentry[2]/str")
+	if got != "bar" {
+		t.Errorf("Expected element to be bar, got %s", got)
+	}
+	matches, _ = n.Augeas.Match("/test/mapentry[2]/slstr")
+	if len(matches) != 2 {
+		t.Errorf("Expected 2 elements, got %v", len(matches))
+	}
+	got, _ = n.Augeas.Get("/test/mapentry[2]/slstr[2]")
+	if got != "daleth" {
+		t.Errorf("Expected element to be daleth, got %s", got)
 	}
 }
 

@@ -57,15 +57,23 @@ func (n *Narcissus) writeSimpleField(field reflect.Value, fieldPath string, tag 
 
 func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) error {
 	for i := 0; i < field.Len(); i++ {
+		value := field.Index(i)
 		var p string
 		if fieldType.Tag.Get("type") == "seq" {
 			p = fmt.Sprintf("%s/%v", path, i+1)
 		} else {
 			p = fmt.Sprintf("%s[%v]", fieldPath, i+1)
 		}
-		err := n.writeSimpleField(field.Index(i), p, fieldType.Tag)
-		if err != nil {
-			return fmt.Errorf("failed to write slice value: %v", err)
+		if value.Kind() == reflect.Struct {
+			err := n.writeStruct(value, p)
+			if err != nil {
+				return fmt.Errorf("failed to write slice struct value: %v", err)
+			}
+		} else {
+			err := n.writeSimpleField(value, p, fieldType.Tag)
+			if err != nil {
+				return fmt.Errorf("failed to write slice value: %v", err)
+			}
 		}
 	}
 
