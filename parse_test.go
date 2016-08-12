@@ -8,13 +8,6 @@ import (
 	"honnef.co/go/augeas"
 )
 
-type foo struct {
-	augeasPath string
-	A          string `path:"a"`
-}
-
-type bar struct{}
-
 func TestParseNotAPtr(t *testing.T) {
 	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
@@ -103,13 +96,6 @@ func TestNoAugeasPathField(t *testing.T) {
 	}
 }
 
-type simpleValues struct {
-	augeasPath string
-	Str        string `path:"str"`
-	Int        int    `path:"int"`
-	Bool       bool   `path:"bool"`
-}
-
 func TestGetSimpleField(t *testing.T) {
 	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
@@ -172,15 +158,6 @@ func TestGetSimpleFieldWrongTypes(t *testing.T) {
 	if err.Error() != "failed to retrieve field Bool: failed to convert a to bool: strconv.ParseBool: parsing \"a\": invalid syntax" {
 		t.Errorf("Expected bool conversion error, got %v", err)
 	}
-}
-
-type sliceValues struct {
-	augeasPath string
-	SlStr      []string   `path:"slstr"`
-	SlInt      []int      `path:"slint"`
-	SlBool     []bool     `path:"slbool"`
-	SlStrSeq   []string   `type:"seq"`
-	SlStruct   []mapEntry `path:"mapentry"`
 }
 
 func TestGetSliceField(t *testing.T) {
@@ -255,19 +232,6 @@ func TestGetSliceField(t *testing.T) {
 	}
 }
 
-type mapValues struct {
-	augeasPath string
-	Entries    map[string]mapEntry `path:"mstruct"`
-	MStr       map[string]string   `path:"sub/*" key:"label"`
-}
-
-type mapEntry struct {
-	Str   string   `path:"str"`
-	Int   int      `path:"int"`
-	Bool  bool     `path:"bool"`
-	SlStr []string `path:"slstr"`
-}
-
 func TestGetMapField(t *testing.T) {
 	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
@@ -322,11 +286,6 @@ func TestGetMapField(t *testing.T) {
 	if m.MStr["b"] != "beth" {
 		t.Errorf("Expected element to be beth, got %s", m.MStr["b"])
 	}
-}
-
-type noCapital struct {
-	augeasPath string
-	a          string `path:"a"`
 }
 
 func TestSetField(t *testing.T) {

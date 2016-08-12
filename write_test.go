@@ -14,18 +14,13 @@ import (
 	"honnef.co/go/augeas"
 )
 
-type fooWrite struct {
-	augeasPath string
-	A          string `path:"a"`
-}
-
 func TestWriteNotAPtr(t *testing.T) {
 	aug, err := augeas.New("", "", augeas.NoModlAutoload)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
 	n := New(&aug)
-	err = n.Write(fooWrite{
+	err = n.Write(foo{
 		augeasPath: "/files/some/path",
 	})
 
@@ -62,7 +57,7 @@ func TestWriteNoAugeasPathValue(t *testing.T) {
 		t.Fatal("Failed to create Augeas handler")
 	}
 	n := New(&aug)
-	err = n.Write(&fooWrite{})
+	err = n.Write(&foo{})
 
 	if err == nil {
 		t.Error("Expected an error, got nothing")
