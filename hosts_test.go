@@ -124,6 +124,77 @@ func TestWriteHosts(t *testing.T) {
 	}
 }
 
+func TestWriteHostsNewHost(t *testing.T) {
+	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
+	aug, err := augeas.New(fakeroot, "", 2)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	// Cleanup
+	os.Remove(fakeroot + "/etc/hosts.augnew")
+
+	hosts, err := n.NewHosts()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	err = n.Write(hosts)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	errStr, _ := aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	// check that file is unchanged
+	if f, err := os.Stat(fakeroot + "/etc/hosts.augnew"); err == nil && f.Mode().IsRegular() {
+		t.Errorf("Expected augnew file to be absent, was present")
+	}
+
+	host := Host{
+		IPAddress: "192.168.0.1",
+		Canonical: "foo.example.com",
+		Aliases:   []string{"foo", "bar"},
+		Comment:   "Foo host",
+	}
+	hosts.Hosts = append(hosts.Hosts, host)
+
+	err = n.Write(hosts)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	errStr, _ = aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	// check that file is changed
+	expectedDiff := `--- orig
++++ new
+@@ -7,0 +8 @@
++192.168.0.1	foo.example.com foo bar # Foo host
+`
+	diff, err := diffNewContent("/etc/hosts")
+	if err != nil {
+		t.Errorf("Failed to compute diff: %v", err)
+	} else if diff != expectedDiff {
+		t.Errorf("Expected diff %s, got %s", expectedDiff, diff)
+	}
+}
+
 func ExampleNarcissus_NewHosts() {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
