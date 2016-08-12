@@ -85,9 +85,12 @@ func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructF
 		if value.Kind() == reflect.Struct {
 			err := n.writeSimpleField(k, p, fieldType.Tag)
 			if err != nil {
-				return fmt.Errorf("failed to write map value: %v", err)
+				return fmt.Errorf("failed to write map key: %v", err)
 			}
-			n.writeStruct(value, p)
+			err = n.writeStruct(value, p)
+			if err != nil {
+				return fmt.Errorf("failed to write map struct value: %v", err)
+			}
 		} else {
 			err := n.writeSimpleField(value, p, fieldType.Tag)
 			if err != nil {
