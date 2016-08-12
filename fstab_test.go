@@ -9,7 +9,7 @@ import (
 	"honnef.co/go/augeas"
 )
 
-func TestFstabEntry(t *testing.T) {
+func TestParseFstabEntry(t *testing.T) {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
@@ -42,7 +42,7 @@ func TestFstabEntry(t *testing.T) {
 	}
 }
 
-func TestFstab(t *testing.T) {
+func TestParseFstab(t *testing.T) {
 	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
