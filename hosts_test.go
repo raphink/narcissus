@@ -54,7 +54,7 @@ func TestHosts(t *testing.T) {
 }
 
 func ExampleNarcissus_NewHosts() {
-	aug, err := augeas.New("/", "", augeas.None)
+	aug, err := augeas.New(fakeroot, "", augeas.None)
 	if err != nil {
 		log.Fatal("Failed to create Augeas handler")
 	}
