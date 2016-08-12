@@ -69,41 +69,18 @@ func TestWritePasswd(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	err = n.Write(passwd)
+	err = wrapWrite(n, passwd, true)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ := aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
-	}
-
-	// check that file is unchanged
-	if f, err := os.Stat(fakeroot + "/etc/passwd.augnew"); err == nil && f.Mode().IsRegular() {
-		t.Errorf("Expected augnew file to be absent, was present")
 	}
 
 	var user = passwd.Users["raphink"]
 	user.Shell = "/bin/sh"
 	passwd.Users["raphink"] = user
 
-	err = n.Write(passwd)
+	err = wrapWrite(n, passwd, false)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ = aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
 	}
 
 	// check that file is changed
@@ -137,23 +114,9 @@ func TestWritePasswdNewUser(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	err = n.Write(passwd)
+	err = wrapWrite(n, passwd, true)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ := aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
-	}
-
-	// check that file is unchanged
-	if f, err := os.Stat(fakeroot + "/etc/passwd.augnew"); err == nil && f.Mode().IsRegular() {
-		t.Errorf("Expected augnew file to be absent, was present")
 	}
 
 	user, err := n.NewPasswdUser("foo")
@@ -165,18 +128,9 @@ func TestWritePasswdNewUser(t *testing.T) {
 	user.Password = "XXX"
 	passwd.Users["foo"] = *user
 
-	err = n.Write(passwd)
+	err = wrapWrite(n, passwd, false)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ = aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
 	}
 
 	// check that file is changed

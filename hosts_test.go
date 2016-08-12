@@ -74,23 +74,9 @@ func TestWriteHosts(t *testing.T) {
 		t.Errorf("Failed with %s", errStr)
 	}
 
-	err = n.Write(hosts)
+	err = wrapWrite(n, hosts, true)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ = aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
-	}
-
-	// check that file is unchanged
-	if f, err := os.Stat(fakeroot + "/etc/hosts.augnew"); err == nil && f.Mode().IsRegular() {
-		t.Errorf("Expected augnew file to be absent, was present")
 	}
 
 	hosts.Hosts[0].Canonical = "foo"
@@ -140,23 +126,9 @@ func TestWriteHostsNewHost(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	err = n.Write(hosts)
+	err = wrapWrite(n, hosts, true)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ := aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
-	}
-
-	// check that file is unchanged
-	if f, err := os.Stat(fakeroot + "/etc/hosts.augnew"); err == nil && f.Mode().IsRegular() {
-		t.Errorf("Expected augnew file to be absent, was present")
 	}
 
 	host := Host{
@@ -167,18 +139,9 @@ func TestWriteHostsNewHost(t *testing.T) {
 	}
 	hosts.Hosts = append(hosts.Hosts, host)
 
-	err = n.Write(hosts)
+	err = wrapWrite(n, hosts, false)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ = aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
 	}
 
 	// check that file is changed

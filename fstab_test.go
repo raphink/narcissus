@@ -95,23 +95,9 @@ func TestWriteFstab(t *testing.T) {
 		t.Errorf("Failed with %s", errStr)
 	}
 
-	err = n.Write(fstab)
+	err = wrapWrite(n, fstab, true)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ = aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
-	}
-
-	// check that file is unchanged
-	if f, err := os.Stat(fakeroot + "/etc/fstab.augnew"); err == nil && f.Mode().IsRegular() {
-		t.Errorf("Expected augnew file to be absent, was present")
 	}
 
 	fstab.Entries[0].File = "/foo"
@@ -161,23 +147,9 @@ func TestWriteFstabNewEntry(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	err = n.Write(fstab)
+	err = wrapWrite(n, fstab, true)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ := aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
-	}
-
-	// check that file is unchanged
-	if f, err := os.Stat(fakeroot + "/etc/fstab.augnew"); err == nil && f.Mode().IsRegular() {
-		t.Errorf("Expected augnew file to be absent, was present")
 	}
 
 	tab := FstabEntry{
@@ -192,18 +164,9 @@ func TestWriteFstabNewEntry(t *testing.T) {
 	}
 	fstab.Entries = append(fstab.Entries, tab)
 
-	err = n.Write(fstab)
+	err = wrapWrite(n, fstab, false)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	err = aug.Save()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	errStr, _ = aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
 	}
 
 	// check that file is changed

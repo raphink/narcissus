@@ -3,6 +3,7 @@ package narcissus
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/pmezard/go-difflib/difflib"
@@ -306,4 +307,33 @@ func diffContent(orig []byte, new []byte) (string, error) {
 	}
 	diffR, err := difflib.GetUnifiedDiffString(diff)
 	return diffR, err
+}
+
+func augnewPresent(file string) bool {
+	if f, err := os.Stat(fakeroot + file + ".augnew"); err == nil && f.Mode().IsRegular() {
+		return true
+	}
+	return false
+}
+
+func wrapWrite(n *Narcissus, val interface{}, checkAugnew bool) (err error) {
+	aug := n.Augeas
+	err = n.Write(val)
+	if err != nil {
+		return fmt.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		return fmt.Errorf("Expected no error, got %v", err)
+	}
+	errStr, _ := aug.Get("/augeas//error/message")
+	if errStr != "" {
+		return fmt.Errorf("Failed with %s", errStr)
+	}
+
+	if checkAugnew && augnewPresent("/etc/passwd") {
+		return fmt.Errorf("Expected augnew file to be absent, was present")
+	}
+
+	return nil
 }
