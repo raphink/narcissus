@@ -71,3 +71,55 @@ func TestFstab(t *testing.T) {
 		t.Errorf("Expected comment text, got %s", fstab.Comments[5].Comment)
 	}
 }
+
+func TestWriteFstab(t *testing.T) {
+	// FIXME: use augeas.SaveNewFile, but it is broken?
+	aug, err := augeas.New(fakeroot, "", augeas.None)
+	if err != nil {
+		t.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	fstab, err := n.NewFstab()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	errStr, _ := aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	err = n.Write(fstab)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	errStr, _ = aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	// TODO: check that file is unchanged
+
+	fstab.Entries[0].File = "/foo"
+
+	err = n.Write(fstab)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	err = aug.Save()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	errStr, _ = aug.Get("/augeas//error/message")
+	if errStr != "" {
+		t.Errorf("Failed with %s", errStr)
+	}
+
+	// TODO: check that file is changed
+}
