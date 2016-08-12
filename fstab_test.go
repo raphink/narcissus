@@ -1,6 +1,8 @@
 package narcissus
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"testing"
 
@@ -141,4 +143,20 @@ func TestWriteFstab(t *testing.T) {
 	} else if diff != expectedDiff {
 		t.Errorf("Expected diff %s, got %s", expectedDiff, diff)
 	}
+}
+
+func ExampleFstab() {
+	aug, err := augeas.New("/", "", augeas.None)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
+	fstab, err := n.NewFstab()
+	if err != nil {
+		log.Fatalf("Expected no error, got %v", err)
+	}
+
+	fmt.Printf("File=%v", fstab.Entries[0].File)
+	// Output: File=/
 }
