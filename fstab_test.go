@@ -1,6 +1,7 @@
 package narcissus
 
 import (
+	"os"
 	"testing"
 
 	"honnef.co/go/augeas"
@@ -80,6 +81,9 @@ func TestWriteFstab(t *testing.T) {
 	}
 	n := New(&aug)
 
+	// Cleanup
+	os.Remove(fakeroot + "/etc/fstab.augnew")
+
 	fstab, err := n.NewFstab()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
@@ -103,7 +107,10 @@ func TestWriteFstab(t *testing.T) {
 		t.Errorf("Failed with %s", errStr)
 	}
 
-	// TODO: check that file is unchanged
+	// check that file is unchanged
+	if f, err := os.Stat(fakeroot + "/etc/fstab.augnew"); err == nil && f.Mode().IsRegular() {
+		t.Errorf("Expected augnew file to be absent, was present")
+	}
 
 	fstab.Entries[0].File = "/foo"
 
@@ -121,5 +128,17 @@ func TestWriteFstab(t *testing.T) {
 		t.Errorf("Failed with %s", errStr)
 	}
 
-	// TODO: check that file is changed
+	// check that file is changed
+	expectedDiff := `--- orig
++++ new
+@@ -8 +8 @@
+-/dev/mapper/wrk8--vg-root /               ext4    errors=remount-ro 0       1
++/dev/mapper/wrk8--vg-root /foo               ext4    errors=remount-ro 0       1
+`
+	diff, err := diffNewContent("/etc/fstab")
+	if err != nil {
+		t.Errorf("Failed to compute diff: %v", err)
+	} else if diff != expectedDiff {
+		t.Errorf("Expected diff %s, got %s", expectedDiff, diff)
+	}
 }
