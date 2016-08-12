@@ -198,6 +198,22 @@ func ExamplePasswd() {
 	}
 	n := New(&aug)
 
+	passwd, err := n.NewPasswd()
+	if err != nil {
+		log.Fatalf("Expected no error, got %v", err)
+	}
+
+	fmt.Printf("UID=%v", passwd.Users["root"].UID)
+	// Output: UID=0
+}
+
+func ExamplePasswdUser() {
+	aug, err := augeas.New("/", "", augeas.None)
+	if err != nil {
+		log.Fatal("Failed to create Augeas handler")
+	}
+	n := New(&aug)
+
 	user, err := n.NewPasswdUser("root")
 	if err != nil {
 		log.Fatalf("Expected no error, got %v", err)
