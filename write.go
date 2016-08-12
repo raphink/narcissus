@@ -106,14 +106,18 @@ func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.Struc
 }
 
 func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) (err error) {
-	for _, k := range field.MapKeys() {
+	keys := field.MapKeys()
+	var purgeConditions []string
+	for _, k := range keys {
 		value := field.MapIndex(k)
 		var p string
 		if strings.HasSuffix(fieldPath, "/*") {
 			// TrimSuffix? ouch!
 			p = fmt.Sprintf("%s/%s", strings.TrimSuffix(fieldPath, "/*"), k)
+			purgeConditions = append(purgeConditions, fmt.Sprintf("label() != '%s'", k))
 		} else {
 			p = fmt.Sprintf("%s[.='%s']", fieldPath, k)
+			purgeConditions = append(purgeConditions, fmt.Sprintf(". != '%s'", k))
 		}
 		if value.Kind() == reflect.Struct {
 			if fieldType.Tag.Get("key") != "label" {
@@ -133,6 +137,10 @@ func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructF
 			}
 		}
 	}
+
+	// Purge absent keys
+	purgePath := fieldPath + "[" + strings.Join(purgeConditions, " and ") + "]"
+	n.Augeas.Remove(purgePath)
 
 	return nil
 }
