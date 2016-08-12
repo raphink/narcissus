@@ -1,6 +1,7 @@
 package narcissus
 
 import (
+	"os"
 	"testing"
 
 	"honnef.co/go/augeas"
@@ -52,19 +53,18 @@ func TestParsePasswdUser(t *testing.T) {
 
 func TestWritePasswd(t *testing.T) {
 	// FIXME: use augeas.SaveNewFile, but it is broken?
-	aug, err := augeas.New(fakeroot, "", augeas.None)
+	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
 	n := New(&aug)
 
+	// Cleanup
+	os.Remove(fakeroot + "/etc/passwd.augnew")
+
 	passwd, err := n.NewPasswd()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	errStr, _ := aug.Get("/augeas//error/message")
-	if errStr != "" {
-		t.Errorf("Failed with %s", errStr)
 	}
 
 	err = n.Write(passwd)
@@ -76,12 +76,15 @@ func TestWritePasswd(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	errStr, _ = aug.Get("/augeas//error/message")
+	errStr, _ := aug.Get("/augeas//error/message")
 	if errStr != "" {
 		t.Errorf("Failed with %s", errStr)
 	}
 
-	// TODO: check that file is unchanged
+	// check that file is unchanged
+	if f, err := os.Stat(fakeroot + "/etc/passwd.augnew"); err == nil && f.Mode().IsRegular() {
+		t.Errorf("Expected augnew file to be absent, was present")
+	}
 
 	var user = passwd.Users["raphink"]
 	user.Shell = "/bin/sh"
@@ -101,7 +104,19 @@ func TestWritePasswd(t *testing.T) {
 		t.Errorf("Failed with %s", errStr)
 	}
 
-	// TODO: check that file is changed
+	// check that file is changed
+	expectedDiff := `--- orig
++++ new
+@@ -41 +41 @@
+-raphink:x:1000:1000:Raphaël Pinson,,,:/home/raphink:/bin/bash
++raphink:x:1000:1000:Raphaël Pinson,,,:/home/raphink:/bin/sh
+`
+	diff, err := diffNewContent("/etc/passwd")
+	if err != nil {
+		t.Errorf("Failed to compute diff: %v", err)
+	} else if diff != expectedDiff {
+		t.Errorf("Expected diff %s, got %s", expectedDiff, diff)
+	}
 }
 
 func TestWritePasswdNewUser(t *testing.T) {

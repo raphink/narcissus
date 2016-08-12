@@ -1,7 +1,11 @@
 package narcissus
 
 import (
+	"fmt"
+	"io/ioutil"
 	"testing"
+
+	"github.com/pmezard/go-difflib/difflib"
 
 	"honnef.co/go/augeas"
 )
@@ -273,4 +277,33 @@ func TestWriteMapField(t *testing.T) {
 	if got != "beth" {
 		t.Errorf("Expected element to be beth, got %s", got)
 	}
+}
+
+// util methods
+
+func diffNewContent(file string) (string, error) {
+	origFile := fakeroot + file
+	origContent, err := ioutil.ReadFile(origFile)
+	if err != nil {
+		return "", fmt.Errorf("Failed to read file %s: %v", origFile, err)
+	}
+	newFile := origFile + ".augnew"
+	newContent, err := ioutil.ReadFile(newFile)
+	if err != nil {
+		return "", fmt.Errorf("Failed to read file %s: %v", newFile, err)
+	}
+	return diffContent(origContent, newContent)
+}
+
+func diffContent(orig []byte, new []byte) (string, error) {
+	diff := difflib.UnifiedDiff{
+		A:        difflib.SplitLines(string(orig)),
+		B:        difflib.SplitLines(string(new)),
+		FromFile: "orig",
+		ToFile:   "new",
+		Context:  0,
+		Eol:      "\n",
+	}
+	diffR, err := difflib.GetUnifiedDiffString(diff)
+	return diffR, err
 }
