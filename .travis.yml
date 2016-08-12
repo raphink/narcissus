@@ -8,5 +8,6 @@ addons:
 go:
 - 1.6
 after_success:
+- rm -f fakeroot/etc/*.augnew
 - go get github.com/mattn/goveralls
 - "$HOME/gopath/bin/goveralls -service=travis-ci"
