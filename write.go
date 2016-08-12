@@ -51,6 +51,11 @@ func (n *Narcissus) writeSimpleField(field reflect.Value, fieldPath string, tag 
 	aug := n.Augeas
 	// There might be a better way to convert, but that does it
 	value := fmt.Sprintf("%v", field.Interface())
+
+	if tag.Get("value-from") == "label" {
+		return nil
+	}
+
 	err := aug.Set(fieldPath, value)
 	return err
 }
