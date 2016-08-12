@@ -55,8 +55,6 @@ func (n *Narcissus) writeSimpleField(field reflect.Value, fieldPath string, tag 
 }
 
 func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) error {
-	//aug := n.Augeas
-
 	for i := 0; i < field.Len(); i++ {
 		var p string
 		if fieldType.Tag.Get("type") == "seq" {
