@@ -31,7 +31,7 @@ func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
 		}
 		value, err := n.getField(ref.Field(i), refType.Field(i), path)
 		// TODO: implement omitempty
-		if err == ErrNodeNotFound {
+		if err == errNodeNotFound {
 			continue
 		}
 		if err != nil {
@@ -70,7 +70,7 @@ func (n *Narcissus) getSimpleField(fieldType reflect.Type, fieldPath string, tag
 		value, err = aug.Get(fieldPath)
 	}
 	if err != nil && strings.Contains(err.Error(), "No matching node") {
-		return nil, ErrNodeNotFound
+		return nil, errNodeNotFound
 	}
 
 	switch fieldType.Kind() {

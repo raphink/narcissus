@@ -6,8 +6,7 @@ import (
 	"honnef.co/go/augeas"
 )
 
-// ErrNodeNotFound is returned if requested node was not found
-var ErrNodeNotFound = errors.New("Node not found")
+var errNodeNotFound = errors.New("Node not found")
 
 // Narcissus is a Narcissus handler
 type Narcissus struct {
