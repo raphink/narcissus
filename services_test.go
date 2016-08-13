@@ -49,8 +49,7 @@ func TestParseServices(t *testing.T) {
 }
 
 func TestWriteServices(t *testing.T) {
-	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
-	aug, err := augeas.New(fakeroot, "", 2)
+	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -96,8 +95,7 @@ func TestWriteServices(t *testing.T) {
 }
 
 func TestWriteServicesNewService(t *testing.T) {
-	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
-	aug, err := augeas.New(fakeroot, "", 2)
+	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}

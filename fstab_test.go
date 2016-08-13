@@ -76,8 +76,7 @@ func TestParseFstab(t *testing.T) {
 }
 
 func TestWriteFstab(t *testing.T) {
-	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
-	aug, err := augeas.New(fakeroot, "", 2)
+	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -123,8 +122,7 @@ func TestWriteFstab(t *testing.T) {
 }
 
 func TestWriteFstabNewEntry(t *testing.T) {
-	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
-	aug, err := augeas.New(fakeroot, "", 2)
+	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
@@ -175,8 +173,7 @@ func TestWriteFstabNewEntry(t *testing.T) {
 }
 
 func TestWriteFstabDeleteEntry(t *testing.T) {
-	// Use augeas.SaveNewFile once https://github.com/dominikh/go-augeas/issues/6 is fixed
-	aug, err := augeas.New(fakeroot, "", 2)
+	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
 	if err != nil {
 		t.Fatal("Failed to create Augeas handler")
 	}
