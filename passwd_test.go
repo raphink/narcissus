@@ -217,7 +217,7 @@ func ExampleNarcissus_NewPasswdUser() {
 	// Output: UID=0
 }
 
-func ExampleNarcissus_NewPasswdUser_ToPasswd() {
+func ExampleNarcissus_NewPasswdUser_toPasswd() {
 	aug, err := augeas.New(fakeroot, "", augeas.SaveNewFile)
 	if err != nil {
 		log.Fatal("Failed to create Augeas handler")
