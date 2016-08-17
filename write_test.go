@@ -132,13 +132,13 @@ func TestWriteSliceField(t *testing.T) {
 		SlBool:     []bool{true, false},
 		SlStrSeq:   []string{"foo", "bar"},
 		SlStruct: []mapEntry{
-			mapEntry{
+			{
 				Str:   "foo",
 				Int:   314,
 				Bool:  true,
 				SlStr: []string{"aleph", "beth"},
 			},
-			mapEntry{
+			{
 				Str:   "bar",
 				Int:   315,
 				Bool:  false,
@@ -219,13 +219,13 @@ func TestWriteMapField(t *testing.T) {
 	m := &mapValues{
 		augeasPath: "/test",
 		Entries: map[string]mapEntry{
-			"one": mapEntry{
+			"one": {
 				Str:   "a",
 				Int:   42,
 				Bool:  true,
 				SlStr: []string{"alpha", "beta"},
 			},
-			"two": mapEntry{
+			"two": {
 				Str:   "b",
 				Int:   43,
 				Bool:  false,

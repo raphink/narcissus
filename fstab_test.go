@@ -146,7 +146,7 @@ func TestWriteFstabNewEntry(t *testing.T) {
 		File:    "/foo",
 		Vfstype: "ext4",
 		Opt: map[string]FstabOpt{
-			"defaults": FstabOpt{},
+			"defaults": {},
 		},
 		Dump:   0,
 		Passno: 0,
