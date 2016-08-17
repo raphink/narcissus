@@ -152,62 +152,23 @@ func TestWriteSliceField(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	matches, _ := n.Augeas.Match("/test/slstr")
-	if len(matches) != 2 {
-		t.Errorf("Expected 2 elements, got %v", len(matches))
-	}
-	got, _ := n.Augeas.Get("/test/slstr[2]")
-	if got != "b" {
-		t.Errorf("Expected element to be b, got %s", got)
-	}
+	checkAugMatch(t, n.Augeas, "/test/slstr", 2)
+	checkAugGet(t, n.Augeas, "/test/slstr[2]", "b")
 
-	matches, _ = n.Augeas.Match("/test/slint")
-	if len(matches) != 2 {
-		t.Errorf("Expected 2 elements, got %v", len(matches))
-	}
-	got, _ = n.Augeas.Get("/test/slint[2]")
-	if got != "2" {
-		t.Errorf("Expected element to be 2, got %v", got)
-	}
+	checkAugMatch(t, n.Augeas, "/test/slint", 2)
+	checkAugGet(t, n.Augeas, "/test/slint[2]", "2")
 
-	matches, _ = n.Augeas.Match("/test/slbool")
-	if len(matches) != 2 {
-		t.Errorf("Expected 2 elements, got %v", len(matches))
-	}
-	got, _ = n.Augeas.Get("/test/slbool[1]")
-	if got != "true" {
-		t.Errorf("Expected element to be true, got %v", got)
-	}
-	got, _ = n.Augeas.Get("/test/slbool[2]")
-	if got != "false" {
-		t.Errorf("Expected element to be false, got %v", got)
-	}
+	checkAugMatch(t, n.Augeas, "/test/slbool", 2)
+	checkAugGet(t, n.Augeas, "/test/slbool[1]", "true")
+	checkAugGet(t, n.Augeas, "/test/slbool[2]", "false")
 
-	matches, _ = n.Augeas.Match("/test/*[label()=~regexp('[0-9]*')]")
-	if len(matches) != 2 {
-		t.Errorf("Expected 2 elements, got %v", len(matches))
-	}
-	got, _ = n.Augeas.Get("/test/2")
-	if got != "bar" {
-		t.Errorf("Expected element to be bar, got %s", got)
-	}
+	checkAugMatch(t, n.Augeas, "/test/*[label()=~regexp('[0-9]*')]", 2)
+	checkAugGet(t, n.Augeas, "/test/2", "bar")
 
-	matches, _ = n.Augeas.Match("/test/mapentry")
-	if len(matches) != 2 {
-		t.Errorf("Expected 2 elements, got %v", len(matches))
-	}
-	got, _ = n.Augeas.Get("/test/mapentry[2]/str")
-	if got != "bar" {
-		t.Errorf("Expected element to be bar, got %s", got)
-	}
-	matches, _ = n.Augeas.Match("/test/mapentry[2]/slstr")
-	if len(matches) != 2 {
-		t.Errorf("Expected 2 elements, got %v", len(matches))
-	}
-	got, _ = n.Augeas.Get("/test/mapentry[2]/slstr[2]")
-	if got != "daleth" {
-		t.Errorf("Expected element to be daleth, got %s", got)
-	}
+	checkAugMatch(t, n.Augeas, "/test/mapentry", 2)
+	checkAugGet(t, n.Augeas, "/test/mapentry[2]/str", "bar")
+	checkAugMatch(t, n.Augeas, "/test/mapentry[2]/slstr", 2)
+	checkAugGet(t, n.Augeas, "/test/mapentry[2]/slstr[2]", "daleth")
 }
 
 func TestWriteMapField(t *testing.T) {
@@ -243,39 +204,15 @@ func TestWriteMapField(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	matches, _ := n.Augeas.Match("/test/mstruct")
-	if len(matches) != 2 {
-		t.Errorf("Expected 2 entries, got %v", len(matches))
-	}
-	got, _ := n.Augeas.Get("/test/mstruct[.='two']/str")
-	if got != "b" {
-		t.Errorf("Expected element to be b, got %s", got)
-	}
-	got, _ = n.Augeas.Get("/test/mstruct[.='two']/int")
-	if got != "43" {
-		t.Errorf("Expected element to be 43, got %s", got)
-	}
-	got, _ = n.Augeas.Get("/test/mstruct[.='two']/bool")
-	if got != "false" {
-		t.Errorf("Expected element to be false, got %s", got)
-	}
-	matches, _ = n.Augeas.Match("/test/mstruct[.='two']/slstr")
-	if len(matches) != 2 {
-		t.Errorf("Expected 2 entries, got %v", len(matches))
-	}
-	got, _ = n.Augeas.Get("/test/mstruct[.='two']/slstr[2]")
-	if got != "delta" {
-		t.Errorf("Expected element to be delta, got %v", got)
-	}
+	checkAugMatch(t, n.Augeas, "/test/mstruct", 2)
+	checkAugGet(t, n.Augeas, "/test/mstruct[.='two']/str", "b")
+	checkAugGet(t, n.Augeas, "/test/mstruct[.='two']/int", "43")
+	checkAugGet(t, n.Augeas, "/test/mstruct[.='two']/bool", "false")
+	checkAugMatch(t, n.Augeas, "/test/mstruct[.='two']/slstr", 2)
+	checkAugGet(t, n.Augeas, "/test/mstruct[.='two']/slstr[2]", "delta")
 
-	matches, _ = n.Augeas.Match("/test/sub/*")
-	if len(matches) != 2 {
-		t.Errorf("Expected 2 entries, got %v", len(matches))
-	}
-	got, _ = n.Augeas.Get("/test/sub/b")
-	if got != "beth" {
-		t.Errorf("Expected element to be beth, got %s", got)
-	}
+	checkAugMatch(t, n.Augeas, "/test/sub/*", 2)
+	checkAugGet(t, n.Augeas, "/test/sub/b", "beth")
 }
 
 // util methods
@@ -369,4 +306,18 @@ func ExampleNarcissus_Write() {
 	fmt.Println(out.String())
 	// Output: Shell=/bin/bash
 	// root:x:0:0:root:/root:/bin/zsh
+}
+
+func checkAugGet(t *testing.T, aug *augeas.Augeas, path string, expected string) {
+	val, _ := aug.Get(path)
+	if val != expected {
+		t.Errorf("Expected %s, got %s", expected, val)
+	}
+}
+
+func checkAugMatch(t *testing.T, aug *augeas.Augeas, path string, expected int) {
+	matches, _ := aug.Match(path)
+	if len(matches) != expected {
+		t.Errorf("Expected %v elements, got %v", expected, len(matches))
+	}
 }
