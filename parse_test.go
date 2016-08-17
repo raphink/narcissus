@@ -268,10 +268,10 @@ func TestGetMapField(t *testing.T) {
 		t.Errorf("Expected element to be b, got %s", m.Entries["two"].Str)
 	}
 	if m.Entries["two"].Int != 43 {
-		t.Errorf("Expected element to be 43, got %s", m.Entries["two"].Int)
+		t.Errorf("Expected element to be 43, got %v", m.Entries["two"].Int)
 	}
 	if m.Entries["two"].Bool != false {
-		t.Errorf("Expected element to be false, got %s", m.Entries["two"].Bool)
+		t.Errorf("Expected element to be false, got %v", m.Entries["two"].Bool)
 	}
 	if len(m.Entries["two"].SlStr) != 2 {
 		t.Errorf("Expected 2 entries, got %v", len(m.Entries["two"].SlStr))
