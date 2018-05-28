@@ -40,7 +40,7 @@ func (n *Narcissus) writeStruct(ref reflect.Value, path string) error {
 		}
 		err := n.writeField(ref.Field(i), refType.Field(i), path)
 		if err != nil {
-			return fmt.Errorf("failed to write field %s: %v", refType.Field(i).Name, err)
+			return fmt.Errorf("failed to write field %s to path %s: %v", refType.Field(i).Name, path, err)
 		}
 	}
 
