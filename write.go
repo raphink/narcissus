@@ -139,8 +139,11 @@ func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructF
 	}
 
 	// Purge absent keys
-	purgePath := fieldPath + "[" + strings.Join(purgeConditions, " and ") + "]"
-	n.Augeas.Remove(purgePath)
+	purge := fieldType.Tag.Get("purge")
+	if purge == "true" {
+		purgePath := fieldPath + "[" + strings.Join(purgeConditions, " and ") + "]"
+		n.Augeas.Remove(purgePath)
+	}
 
 	return nil
 }
