@@ -4,25 +4,25 @@ package narcissus
 type Fstab struct {
 	augeasPath string `default:"/files/etc/fstab"`
 	Comments   []struct {
-		Comment string `path:"."`
-	} `path:"#comment"`
-	Entries []FstabEntry `type:"seq"`
+		Comment string `narcissus:"."`
+	} `narcissus:"#comment"`
+	Entries []FstabEntry `narcissus:"seq"`
 }
 
 // FstabEntry maps an Fstab entry
 type FstabEntry struct {
 	augeasPath string
-	Spec       string              `path:"spec"`
-	File       string              `path:"file"`
-	Vfstype    string              `path:"vfstype"`
-	Opt        map[string]FstabOpt `path:"opt"`
-	Dump       int                 `path:"dump"`
-	Passno     int                 `path:"passno"`
+	Spec       string              `narcissus:"spec"`
+	File       string              `narcissus:"file"`
+	Vfstype    string              `narcissus:"vfstype"`
+	Opt        map[string]FstabOpt `narcissus:"opt"`
+	Dump       int                 `narcissus:"dump"`
+	Passno     int                 `narcissus:"passno"`
 }
 
 // FstabOpt is an FstabEntry opt
 type FstabOpt struct {
-	Value string `path:"value"`
+	Value string `narcissus:"value"`
 }
 
 // NewFstab returns a new Fstab structure

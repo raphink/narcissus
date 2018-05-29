@@ -3,19 +3,19 @@ package narcissus
 // Passwd maps /etc/passwd
 type Passwd struct {
 	augeasPath string                `default:"/files/etc/passwd"`
-	Users      map[string]PasswdUser `path:"*" key:"label"`
+	Users      map[string]PasswdUser `narcissus:"*,key-from-label"`
 }
 
 // PasswdUser maps a Passwd user
 type PasswdUser struct {
 	augeasPath string
-	Account    string `path:"." value-from:"label"`
-	Password   string `path:"password"`
-	UID        int    `path:"uid"`
-	GID        int    `path:"gid"`
-	Name       string `path:"name"`
-	Home       string `path:"home"`
-	Shell      string `path:"shell"`
+	Account    string `narcissus:".,value-from-label"`
+	Password   string `narcissus:"password"`
+	UID        int    `narcissus:"uid"`
+	GID        int    `narcissus:"gid"`
+	Name       string `narcissus:"name"`
+	Home       string `narcissus:"home"`
+	Shell      string `narcissus:"shell"`
 }
 
 // NewPasswd returns a new Passwd structure

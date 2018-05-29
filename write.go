@@ -53,7 +53,7 @@ func (n *Narcissus) writeStruct(ref reflect.Value, path string) error {
 }
 
 func (n *Narcissus) writeField(field reflect.Value, fieldType reflect.StructField, path string) error {
-	fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
+	fieldPath := fmt.Sprintf("%s/%s", path, parseTag(fieldType.Tag).path)
 	if field.Kind() == reflect.Slice {
 		return n.writeSliceField(field, fieldType, path, fieldPath)
 	} else if field.Kind() == reflect.Map {
@@ -67,7 +67,7 @@ func (n *Narcissus) writeSimpleField(field reflect.Value, fieldPath string, tag 
 	// There might be a better way to convert, but that does it
 	value := fmt.Sprintf("%v", field.Interface())
 
-	if tag.Get("value-from") == "label" {
+	if parseTag(tag).valueFromLabel {
 		return nil
 	}
 
@@ -84,7 +84,7 @@ func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.Struc
 	for i := 0; i < field.Len(); i++ {
 		value := field.Index(i)
 		var p string
-		if fieldType.Tag.Get("type") == "seq" {
+		if parseTag(fieldType.Tag).seq {
 			p = fmt.Sprintf("%s/%v", path, i+1)
 		} else {
 			p = fmt.Sprintf("%s[%v]", fieldPath, i+1)
@@ -113,6 +113,7 @@ func (n *Narcissus) writeSliceField(field reflect.Value, fieldType reflect.Struc
 func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) (err error) {
 	keys := field.MapKeys()
 	var purgeConditions []string
+	tag := fieldType.Tag
 	for _, k := range keys {
 		value := field.MapIndex(k)
 		var p string
@@ -125,8 +126,8 @@ func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructF
 			purgeConditions = append(purgeConditions, fmt.Sprintf(". != '%s'", k))
 		}
 		if value.Kind() == reflect.Struct {
-			if fieldType.Tag.Get("key") != "label" {
-				err = n.writeSimpleField(k, p, fieldType.Tag)
+			if !parseTag(tag).keyFromLabel {
+				err = n.writeSimpleField(k, p, tag)
 				if err != nil {
 					return fmt.Errorf("failed to write map key: %v", err)
 				}
@@ -136,7 +137,7 @@ func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructF
 				return fmt.Errorf("failed to write map struct value: %v", err)
 			}
 		} else {
-			err := n.writeSimpleField(value, p, fieldType.Tag)
+			err := n.writeSimpleField(value, p, tag)
 			if err != nil {
 				return fmt.Errorf("failed to write map value: %v", err)
 			}
@@ -144,8 +145,7 @@ func (n *Narcissus) writeMapField(field reflect.Value, fieldType reflect.StructF
 	}
 
 	// Purge absent keys
-	purge := fieldType.Tag.Get("purge")
-	if purge == "true" {
+	if parseTag(tag).purge {
 		purgePath := fieldPath + "[" + strings.Join(purgeConditions, " and ") + "]"
 		n.Augeas.Remove(purgePath)
 	}

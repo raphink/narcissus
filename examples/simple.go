@@ -10,10 +10,10 @@ import (
 
 type group struct {
 	augeasPath string
-	Name       string   `path:"." value-from:"label"`
-	Password   string   `path:"password"`
-	GID        int      `path:"gid"`
-	Users      []string `path:"user"`
+	Name       string   `narcissus:".,value-from-label"`
+	Password   string   `narcissus:"password"`
+	GID        int      `narcissus:"gid"`
+	Users      []string `narcissus:"user"`
 }
 
 func main() {

@@ -79,10 +79,10 @@ import (
 
 type group struct {
 	augeasPath string
-	Name       string   `path:"." value-from:"label"`
-	Password   string   `path:"password"`
-	GID        int      `path:"gid"`
-	Users      []string `path:"user"`
+	Name       string   `narcissus:".,value-from-label"`
+	Password   string   `narcissus:"password"`
+	GID        int      `narcissus:"gid"`
+	Users      []string `narcissus:"user"`
 }
 
 
@@ -107,25 +107,18 @@ func main() {
 ```
 
 
-## Tags
+## Tag values
 
-Various tags can be used to describe structures:
+The `narcissus` tag accepts multiple comma separated values. The first value in
+the list is the relative path where the field is mapped in the Augeas tree.
 
-* `path` (mandatory): the relative path where the field is mapped in the
-   Augeas tree;
-* `value-from` (optional): if set to `label`, will get field value from the
-  node label instead of its value;
+Other possible (optional) values are:
 
-### Specific to slice fields
-
-* `type` (optional): if set to `seq`, will treat field as
-   a seq entry in the Augeas tree;
-
-### Specific to map fields
-
-* `key` (optional): if set to `label`, will get the key from the node label
-   instead of its value;
-* `purge` (optional): is set to `true`, will purge all unknown keys in the map;
+* `value-from-label`: get field value from the node label instead of its value;
+* `seq` (slice field only): will treat field as a seq entry in the Augeas tree;
+* `key-from-value` (map field only): get the key from the node label instead
+   of its value;
+* `purge` (map field only): purge all unknown keys in the map.
 
 
 ## Fields
