@@ -22,17 +22,29 @@ func structRef(val interface{}) (ref reflect.Value, err error) {
 }
 
 func getPath(ref reflect.Value) (string, error) {
+	return getField("augeasPath", ref)
+}
+
+func getFile(ref reflect.Value) (string, error) {
+	return getField("augeasFile", ref)
+}
+
+func getLens(ref reflect.Value) (string, error) {
+	return getField("augeasLens", ref)
+}
+
+func getField(name string, ref reflect.Value) (string, error) {
 	refType := ref.Type()
-	if pType, ok := refType.FieldByName("augeasPath"); ok {
-		p := ref.FieldByName("augeasPath")
+	if pType, ok := refType.FieldByName(name); ok {
+		p := ref.FieldByName(name)
 		pp := p.String()
 		if pp == "" {
 			if defaultP := pType.Tag.Get("default"); defaultP != "" {
 				return defaultP, nil
 			}
-			return "", fmt.Errorf("no augeasPath value and no default")
+			return "", fmt.Errorf("no %s value and no default", name)
 		}
 		return pp, nil
 	}
-	return "", fmt.Errorf("no augeasPath field")
+	return "", fmt.Errorf("no %s field", name)
 }
