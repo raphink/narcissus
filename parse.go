@@ -56,7 +56,7 @@ func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
 }
 
 func (n *Narcissus) getField(field reflect.Value, fieldType reflect.StructField, path string) (interface{}, error) {
-	fieldPath := fmt.Sprintf("%s/%s", path, fieldType.Tag.Get("path"))
+	fieldPath := fmt.Sprintf("%s/%s", path, parseTag(fieldType.Tag).path)
 	if field.Kind() == reflect.Slice {
 		return n.getSliceField(field, fieldType, path, fieldPath)
 	} else if field.Kind() == reflect.Map {
@@ -69,7 +69,7 @@ func (n *Narcissus) getSimpleField(fieldType reflect.Type, fieldPath string, tag
 	aug := n.Augeas
 	var value string
 	var err error
-	if tag.Get("value-from") == "label" {
+	if parseTag(tag).valueFromLabel {
 		value, err = aug.Label(fieldPath)
 	} else {
 		value, err = aug.Get(fieldPath)
@@ -100,7 +100,7 @@ func (n *Narcissus) getSimpleField(fieldType reflect.Type, fieldPath string, tag
 func (n *Narcissus) getSliceField(field reflect.Value, fieldType reflect.StructField, path, fieldPath string) (interface{}, error) {
 	aug := n.Augeas
 
-	if fieldType.Tag.Get("type") == "seq" {
+	if parseTag(fieldType.Tag).seq {
 		fieldPath = fmt.Sprintf("%s/*[label()=~regexp('[0-9]*')]", path)
 	}
 	matches, err := aug.Match(fieldPath)
@@ -127,7 +127,7 @@ func (n *Narcissus) getMapField(field reflect.Value, fieldType reflect.StructFie
 	}
 	for _, m := range matches {
 		var label string
-		if fieldType.Tag.Get("key") == "label" {
+		if parseTag(fieldType.Tag).keyFromLabel {
 			label, err = aug.Label(m)
 		} else {
 			label, err = aug.Get(m)

@@ -9,41 +9,41 @@ var fakeroot = wd + "/fakeroot"
 // Test structure
 type foo struct {
 	augeasPath string
-	A          string `path:"a"`
+	A          string `narcissus:"a"`
 }
 
 type bar struct{}
 
 type simpleValues struct {
 	augeasPath string
-	Str        string `path:"str"`
-	Int        int    `path:"int"`
-	Bool       bool   `path:"bool"`
+	Str        string `narcissus:"str"`
+	Int        int    `narcissus:"int"`
+	Bool       bool   `narcissus:"bool"`
 }
 
 type sliceValues struct {
 	augeasPath string
-	SlStr      []string   `path:"slstr"`
-	SlInt      []int      `path:"slint"`
-	SlBool     []bool     `path:"slbool"`
-	SlStrSeq   []string   `type:"seq"`
-	SlStruct   []mapEntry `path:"mapentry"`
+	SlStr      []string   `narcissus:"slstr"`
+	SlInt      []int      `narcissus:"slint"`
+	SlBool     []bool     `narcissus:"slbool"`
+	SlStrSeq   []string   `narcissus:"seq"`
+	SlStruct   []mapEntry `narcissus:"mapentry"`
 }
 
 type mapValues struct {
 	augeasPath string
-	Entries    map[string]mapEntry `path:"mstruct"`
-	MStr       map[string]string   `path:"sub/*" key:"label"`
+	Entries    map[string]mapEntry `narcissus:"mstruct"`
+	MStr       map[string]string   `narcissus:"sub/*,key-from-label"`
 }
 
 type mapEntry struct {
-	Str   string   `path:"str"`
-	Int   int      `path:"int"`
-	Bool  bool     `path:"bool"`
-	SlStr []string `path:"slstr"`
+	Str   string   `narcissus:"str"`
+	Int   int      `narcissus:"int"`
+	Bool  bool     `narcissus:"bool"`
+	SlStr []string `narcissus:"slstr"`
 }
 
 type noCapital struct {
 	augeasPath string
-	a          string `path:"a"`
+	a          string `narcissus:"a"`
 }

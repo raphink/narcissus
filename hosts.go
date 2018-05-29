@@ -4,18 +4,18 @@ package narcissus
 type Hosts struct {
 	augeasPath string `default:"/files/etc/hosts"`
 	Comments   []struct {
-		Comment string `path:"."`
-	} `path:"#comment"`
-	Hosts []Host `type:"seq"`
+		Comment string `narcissus:"."`
+	} `narcissus:"#comment"`
+	Hosts []Host `narcissus:"seq"`
 }
 
 // Host maps an Hosts entry
 type Host struct {
 	augeasPath string
-	IPAddress  string   `path:"ipaddr"`
-	Canonical  string   `path:"canonical"`
-	Aliases    []string `path:"alias"`
-	Comment    string   `path:"#comment"`
+	IPAddress  string   `narcissus:"ipaddr"`
+	Canonical  string   `narcissus:"canonical"`
+	Aliases    []string `narcissus:"alias"`
+	Comment    string   `narcissus:"#comment"`
 }
 
 // NewHosts returns a new Hosts structure

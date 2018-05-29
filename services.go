@@ -4,18 +4,18 @@ package narcissus
 type Services struct {
 	augeasPath string `default:"/files/etc/services"`
 	Comments   []struct {
-		Comment string `path:"."`
-	} `path:"#comment"`
-	Services []Service `path:"service-name"`
+		Comment string `narcissus:"."`
+	} `narcissus:"#comment"`
+	Services []Service `narcissus:"service-name"`
 }
 
 // Service maps a Services entry
 type Service struct {
 	augeasPath string
-	Name       string `path:"."`
-	Port       int    `path:"port"`
-	Protocol   string `path:"protocol"`
-	Comment    string `path:"#comment"`
+	Name       string `narcissus:"."`
+	Port       int    `narcissus:"port"`
+	Protocol   string `narcissus:"protocol"`
+	Comment    string `narcissus:"#comment"`
 }
 
 // NewServices returns a new Services structure
