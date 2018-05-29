@@ -39,8 +39,8 @@ func (n *Narcissus) Write(val interface{}) error {
 func (n *Narcissus) writeStruct(ref reflect.Value, path string) error {
 	refType := ref.Type()
 	for i := 0; i < refType.NumField(); i++ {
-		if refType.Field(i).Name == "augeasPath" {
-			// Ignore the special `augeasPath` field
+		if strings.HasPrefix(refType.Field(i).Name, "augeas") {
+			// Ignore the special `augeas*` fields
 			continue
 		}
 		err := n.writeField(ref.Field(i), refType.Field(i), path)
