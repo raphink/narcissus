@@ -107,6 +107,27 @@ func main() {
 ```
 
 
+## Tags
+
+Various tags can be used to describe structures:
+
+* `path` (mandatory): the relative path where the field is mapped in the
+   Augeas tree;
+* `value-from` (optional): if set to `label`, will get field value from the
+  node label instead of its value;
+
+### Specific to slice fields
+
+* `type` (optional): if set to `seq`, will treat field as
+   a seq entry in the Augeas tree;
+
+### Specific to map fields
+
+* `key` (optional): if set to `label`, will get the key from the node label
+   instead of its value;
+* `purge` (optional): is set to `true`, will purge all unknown keys in the map;
+
+
 ## Fields
 
 Described structures have special fields to specify parameters for Augeas.
