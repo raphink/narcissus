@@ -13,6 +13,11 @@ func (n *Narcissus) Write(val interface{}) error {
 		return fmt.Errorf("invalid interface: %v", err)
 	}
 
+	err = n.Autoload(ref)
+	if err != nil {
+		return fmt.Errorf("failed to autoload file: %v", err)
+	}
+
 	path, err := getPath(ref)
 	if err != nil {
 		return fmt.Errorf("undefined path: %v", err)
