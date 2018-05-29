@@ -30,7 +30,7 @@ func (n *Narcissus) Parse(val interface{}) error {
 func (n *Narcissus) parseStruct(ref reflect.Value, path string) error {
 	refType := ref.Type()
 	for i := 0; i < refType.NumField(); i++ {
-		if refType.Field(i).Name == "augeasPath" {
+		if strings.HasPrefix(refType.Field(i).Name, "augeas") {
 			// Ignore the special `augeasPath` field
 			continue
 		}
