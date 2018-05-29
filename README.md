@@ -105,3 +105,34 @@ func main() {
 	log.Printf("Users=%v", strings.Join(group.Users, ","))
 }
 ```
+
+
+## Fields
+
+Described structures have special fields to specify parameters for Augeas.
+
+* `augeasPath` (mandatory): the path to the structure in the Augeas tree;
+* `augeasFile` (optional): let Augeas load only this file. If `augeasLens` is
+  not specified, Augeas will use the default lens for the file if available;
+* `augeasLens` (optional): if `augeasFile` is set (ignored otherwise),
+  specifies which lens to use to parse the file. This is required when parsing
+  a file at a non-standard location.
+
+
+Each of these fields can be specified in one of two ways:
+
+* by using the `default` tag with a default value for the field, e.g.
+
+```go
+type group struct {
+	augeasPath string `default:"/files/etc/group/root"`
+}
+```
+
+* by specifying a value for the instance in the structure field, e.g.
+
+```go
+myGroup := group {
+    augeasPath: "/files/etc/group/docker",
+}
+```
