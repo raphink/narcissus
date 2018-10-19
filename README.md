@@ -1,5 +1,5 @@
-Narcissus
-=========
+Narcissus: edit configuration files as go structs
+=================================================
 
 [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/raphink/narcissus)
 [![Build Status](https://img.shields.io/travis/raphink/narcissus/master.svg)](https://travis-ci.org/raphink/narcissus)
