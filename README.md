@@ -7,7 +7,10 @@ Narcissus
 [![Code Climate](https://img.shields.io/codeclimate/github/raphink/narcissus.svg?maxAge=2592000)](https://codeclimate.com/github/raphink/narcissus/issues)
 [![Go Report Card](https://goreportcard.com/badge/github.com/raphink/narcissus)](https://goreportcard.com/report/github.com/raphink/narcissus)
 
-This go package aims to provide reflection for the Augeas library.
+This go package aims to provide reflection for the [Augeas](http://augeas.net) library.
+
+This allows to turn Augeas lenses into Go structs for easy parsing and
+modification of configuration files.
 
 ## Example
 
