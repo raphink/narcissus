@@ -71,8 +71,7 @@ func (n *Narcissus) writeSimpleField(field reflect.Value, fieldPath string, tag 
 		return nil
 	}
 
-	// FIXME: use omitempty for that
-	if value == "" {
+	if value == "" && parseTag(tag).omitEmpty {
 		return nil
 	}
 

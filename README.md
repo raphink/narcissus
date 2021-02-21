@@ -120,7 +120,8 @@ Other possible (optional) values are:
 * `seq` (slice field only): will treat field as a seq entry in the Augeas tree;
 * `key-from-value` (map field only): get the key from the node label instead
    of its value;
-* `purge` (map field only): purge all unknown keys in the map.
+* `purge` (map field only): purge all unknown keys in the map;
+* `omitempty`: do not set value when not found.
 
 
 ## Fields

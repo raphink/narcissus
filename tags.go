@@ -13,6 +13,7 @@ type fieldTags struct {
 	keyFromLabel   bool
 	valueFromLabel bool
 	seq            bool
+	omitEmpty      bool
 }
 
 func parseTag(tag reflect.StructTag) fieldTags {
@@ -24,6 +25,7 @@ func parseTag(tag reflect.StructTag) fieldTags {
 		keyFromLabel:   sliceHasTag(slice, "key-from-label"),
 		valueFromLabel: sliceHasTag(slice, "value-from-label"),
 		seq:            sliceHasTag(slice, "seq"),
+		omitEmpty:      sliceHasTag(slice, "omitempty"),
 	}
 }
 
